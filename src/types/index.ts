@@ -5,3 +5,8 @@ export interface StateData {
 	action: string,
 	next: string[],
 }
+
+export interface NextState {
+	value: string,
+	text: string
+}

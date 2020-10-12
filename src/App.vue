@@ -1,8 +1,8 @@
 <template>
     <div id="app">
-        <v-app>
+        <v-app class="main">
             <v-content>
-                <v-container fluid>
+                <v-container fluid class="pa-0">
                     <MangoFpSettingsMain />
                 </v-container>
             </v-content>
@@ -18,3 +18,4 @@ export default {
     },
 };
 </script>
+<style src="@/styles/global.css"></style>
