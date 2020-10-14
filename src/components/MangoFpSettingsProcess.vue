@@ -1,9 +1,9 @@
 <template>
     <v-sheet background-color="transparent" color="basil" elevation="1">
         <v-container>
-            <h2>
+            <h3>
                 {{ locStr("Define steps in Your contact management process") }}
-            </h2>
+            </h3>
             <v-tabs
                 next-icon="mdi-arrow-right-bold-box-outline"
                 prev-icon="mdi-arrow-left-bold-box-outline"

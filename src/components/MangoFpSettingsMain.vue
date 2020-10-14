@@ -17,26 +17,21 @@
                 >
                     {{ error }}
                 </v-alert>
-                <v-tabs vertical>
-                    <v-tab>{{ locStr("Process") }}</v-tab>
+                <v-tabs class="settings-main-tabs" vertical>
+                    <v-tab>{{ locStr("Define process steps") }}</v-tab>
+                    <v-tab>{{ locStr("Next steps from every step") }}</v-tab>
                     <v-tab>{{ locStr("Templates") }}</v-tab>
                     <v-tab>{{ locStr("Parameters") }}</v-tab>
-                    <v-tab-item
-                        transition="fade-transition"
-                        reverse-transition="false"
-                    >
+                    <v-tab-item transition="false" reverse-transition="false">
+                        <MangoFpProcessSteps :states="states" />
+                    </v-tab-item>
+                    <v-tab-item transition="false" reverse-transition="false">
                         <MangoFpSettingsProcess :states="states" />
                     </v-tab-item>
-                    <v-tab-item
-                        transition="fade-transition"
-                        reverse-transition="false"
-                    >
+                    <v-tab-item transition="false" reverse-transition="false">
                         Siia tulevad mallid
                     </v-tab-item>
-                    <v-tab-item
-                        transition="fade-transition"
-                        reverse-transition="false"
-                    >
+                    <v-tab-item transition="false" reverse-transition="false">
                         Siia tulevad üldised parameetrid
                     </v-tab-item>
                 </v-tabs>
@@ -49,12 +44,14 @@ import Vue from "vue";
 import { fetchStates } from "@/controllers/states";
 import { locStr } from "@/utilities";
 import MangoFpSettingsProcess from "./MangoFpSettingsProcess.vue";
+import MangoFpProcessSteps from "./MangoFpProcessSteps.vue";
 import { StateData } from "@/types";
 
 export default Vue.extend({
     name: "MangoFpSettingsMain",
     components: {
         MangoFpSettingsProcess,
+        MangoFpProcessSteps,
     },
     data() {
         const emptyStates: StateData[] = [];
