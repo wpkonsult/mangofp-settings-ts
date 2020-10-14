@@ -1,18 +1,18 @@
 <template>
-    <v-card flat max-width="600">
-        <div>
-            <v-card-title>
-                {{ state.state }}
-            </v-card-title>
-        </div>
-        <v-select
-            chips
-            multiple
-            solo
-            :items="nextStates"
-            v-model="state.next"
-            :label="locStr('Next states')"
-        ></v-select>
+    <v-card class="pa-5" flat>
+        <v-card-title>
+            {{ locStr("Switch on new states for ") }}"{{ state.state }}"
+        </v-card-title>
+        <v-card-text>
+            <div v-for="elem in nextStates" :key="elem.value">
+                <v-switch
+                    v-model="state.next"
+                    inset
+                    :label="elem.text"
+                    :value="elem.value"
+                ></v-switch>
+            </div>
+        </v-card-text>
     </v-card>
 </template>
 <script lang="ts">

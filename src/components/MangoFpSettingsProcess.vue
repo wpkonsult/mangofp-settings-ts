@@ -8,18 +8,26 @@
                 next-icon="mdi-arrow-right-bold-box-outline"
                 prev-icon="mdi-arrow-left-bold-box-outline"
                 show-arrows
+                v-model="tab"
             >
                 <v-tabs-slider></v-tabs-slider>
                 <v-tab v-for="state in states" :key="state.order">
                     {{ state.state }}
                 </v-tab>
-                <v-tab-item v-for="state in states" :key="state.order">
+            </v-tabs>
+            <v-tabs-items v-model="tab">
+                <v-tab-item
+                    v-for="state in states"
+                    :key="state.order"
+                    transition="fade-transition"
+                    reverse-transition="fade-transition"
+                >
                     <MangoFpEditProcess
                         :state="state"
                         :nextStates="possibleNextStates(state.code)"
                     />
                 </v-tab-item>
-            </v-tabs>
+            </v-tabs-items>
         </v-container>
     </v-sheet>
 </template>
@@ -37,9 +45,14 @@ export default Vue.extend({
     },
     props: {
         states: {
-            type: Object,
+            type: Array,
             required: true,
-        },
+        } as Vue.PropOptions<StateData[]>,
+    },
+    data() {
+        return {
+            tab: null,
+        };
     },
     methods: {
         possibleNextStates(paramCode: string): NextState[] {

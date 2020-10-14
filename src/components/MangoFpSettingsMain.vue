@@ -19,12 +19,19 @@
                 </v-alert>
                 <v-tabs vertical>
                     <v-tab>{{ locStr("Process") }}</v-tab>
+                    <v-tab>{{ locStr("Templates") }}</v-tab>
                     <v-tab>{{ locStr("Parameters") }}</v-tab>
                     <v-tab-item
                         transition="fade-transition"
                         reverse-transition="false"
                     >
                         <MangoFpSettingsProcess :states="states" />
+                    </v-tab-item>
+                    <v-tab-item
+                        transition="fade-transition"
+                        reverse-transition="false"
+                    >
+                        Siia tulevad mallid
                     </v-tab-item>
                     <v-tab-item
                         transition="fade-transition"
@@ -42,6 +49,7 @@ import Vue from "vue";
 import { fetchStates } from "@/controllers/states";
 import { locStr } from "@/utilities";
 import MangoFpSettingsProcess from "./MangoFpSettingsProcess.vue";
+import { StateData } from "@/types";
 
 export default Vue.extend({
     name: "MangoFpSettingsMain",
@@ -49,10 +57,11 @@ export default Vue.extend({
         MangoFpSettingsProcess,
     },
     data() {
+        const emptyStates: StateData[] = [];
         return {
             loading: true,
             error: "",
-            states: {},
+            states: emptyStates,
         };
     },
     methods: {
@@ -62,7 +71,10 @@ export default Vue.extend({
     },
     async mounted() {
         this.loading = false;
-        return await fetchStates();
+        const retData = await fetchStates();
+        console.log("Returned data:");
+        console.log(retData);
+        this.states = retData;
     },
 });
 </script>
