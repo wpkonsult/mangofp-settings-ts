@@ -28,10 +28,27 @@
 
                                         <div>{{ state.action }}</div>
                                     </v-card-text>
+                                    <v-card-actions>
+                                        <v-btn
+                                            text
+                                            @click="modifyState(state.code)"
+                                        >
+                                            {{ locStr("Modify") }}
+                                        </v-btn>
+                                    </v-card-actions>
                                 </v-card>
                             </v-timeline-item>
                         </v-timeline>
                     </v-card-text>
+                    <v-card-actions>
+                        <v-btn
+                            color="deep-purple lighten-2"
+                            text
+                            @click="alert('Lisa')"
+                        >
+                            {{ locStr("Add state") }}
+                        </v-btn>
+                    </v-card-actions>
                 </v-card>
             </v-row>
         </v-container>
@@ -56,6 +73,10 @@ export default Vue.extend({
     methods: {
         locStr: function(key: string): string {
             return locStr(key);
+        },
+        modifyState: function(event: any) {
+            console.log("About to modify ");
+            console.log(event);
         },
     },
 });
