@@ -1,6 +1,6 @@
 <template>
     <v-sheet background-color="transparent" color="basil" elevation="1">
-        <v-container>
+        <v-container pa-0>
             <v-row justify="space-around">
                 <v-card width="600">
                     <v-card-title>
@@ -38,13 +38,16 @@
                                     </v-card-actions>
                                 </v-card>
                             </v-timeline-item>
+                            <v-timeline-item>
+                                <MangoFpEditStep code="CHANGETHIS" description="Sasd asdfasdf as"/>
+                            </v-timeline-item>
                         </v-timeline>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn
                             color="deep-purple lighten-2"
                             text
-                            @click="alert('Lisa')"
+                            @click="addState"
                         >
                             {{ locStr("Add state") }}
                         </v-btn>
@@ -58,9 +61,13 @@
 import Vue from "vue";
 import { StateData, NextState } from "@/types";
 import { locStr } from "@/utilities";
+import MangoFpEditStep from "./MangoFpEditStep.vue";
 
 export default Vue.extend({
     name: "MangoFpProcessSteps",
+    components: {
+        MangoFpEditStep,
+    },
     props: {
         states: {
             type: Array,
@@ -74,9 +81,12 @@ export default Vue.extend({
         locStr: function(key: string): string {
             return locStr(key);
         },
-        modifyState: function(event: any) {
+        modifyState: function(stateCode: string) {
             console.log("About to modify ");
-            console.log(event);
+            console.log(stateCode);
+        },
+        addState: function() {
+            console.log("About to add state");
         },
     },
 });
