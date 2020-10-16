@@ -45,7 +45,7 @@ import { fetchStates } from "@/controllers/states";
 import { locStr } from "@/utilities";
 import MangoFpSettingsProcess from "./MangoFpSettingsProcess.vue";
 import MangoFpProcessSteps from "./MangoFpProcessSteps.vue";
-import { StateData } from "@/types";
+import { dataStore } from "@/main";
 
 export default Vue.extend({
     name: "MangoFpSettingsMain",
@@ -54,11 +54,10 @@ export default Vue.extend({
         MangoFpProcessSteps,
     },
     data() {
-        const emptyStates: StateData[] = [];
         return {
             loading: true,
             error: "",
-            states: emptyStates,
+            states: dataStore.state.stateList,
         };
     },
     methods: {
@@ -71,7 +70,9 @@ export default Vue.extend({
         const retData = await fetchStates();
         console.log("Returned data:");
         console.log(retData);
-        this.states = retData;
+        for (const elem of retData) {
+            await dataStore.addState(elem);
+        }
     },
 });
 </script>

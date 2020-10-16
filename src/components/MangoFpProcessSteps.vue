@@ -42,6 +42,8 @@
                                 <MangoFpEditStep
                                     code="CHANGETHIS"
                                     description="Sasd asdfasdf as"
+                                    @close="closeStepEdit"
+                                    @add="addStepEdit"
                                 />
                             </v-timeline-item>
                         </v-timeline>
@@ -62,9 +64,10 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { StateData, NextState } from "@/types";
+import { StateData } from "@/types";
 import { locStr } from "@/utilities";
 import MangoFpEditStep from "./MangoFpEditStep.vue";
+import * as Actions from "@/actions";
 
 export default Vue.extend({
     name: "MangoFpProcessSteps",
@@ -78,7 +81,9 @@ export default Vue.extend({
         } as Vue.PropOptions<StateData[]>,
     },
     data() {
-        return {};
+        return {
+            newStepModifyOpen: false,
+        };
     },
     methods: {
         locStr: function(key: string): string {
@@ -90,6 +95,17 @@ export default Vue.extend({
         },
         addState: function() {
             console.log("About to add state");
+        },
+        closeStepEdit: function(param: string) {
+            console.log("Need to close edit: " + param);
+            this.newStepModifyOpen = false;
+        },
+        openStepEdit: function() {
+            this.newStepModifyOpen = true;
+        },
+        addStepEdit: function(param: { code: string; name: string }) {
+            console.log("About to add: " + param.code + " name: " + param.name);
+            Actions.addNewState(param.code, param.name);
         },
     },
 });

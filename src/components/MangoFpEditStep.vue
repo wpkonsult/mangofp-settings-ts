@@ -59,10 +59,17 @@ export default Vue.extend({
             return locStr(key);
         },
         saveData() {
-            console.log(`About to save data code: ${this.code4Edit}, description: ${this.description4Edit}`);
+            console.log(
+                `About to save data code: ${this.code4Edit}, description: ${this.description4Edit}`,
+            );
+            this.$emit("add", {
+                code: this.code4Edit,
+                name: this.description4Edit,
+            });
         },
         cancelSaving() {
-            console.log("About to cancel saving");
+            console.log("About to cancel saving and will emit ... ");
+            this.$emit("close", "test");
         },
     },
 });
