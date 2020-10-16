@@ -39,7 +39,10 @@
                                 </v-card>
                             </v-timeline-item>
                             <v-timeline-item>
-                                <MangoFpEditStep code="CHANGETHIS" description="Sasd asdfasdf as"/>
+                                <MangoFpEditStep
+                                    code="CHANGETHIS"
+                                    description="Sasd asdfasdf as"
+                                />
                             </v-timeline-item>
                         </v-timeline>
                     </v-card-text>
