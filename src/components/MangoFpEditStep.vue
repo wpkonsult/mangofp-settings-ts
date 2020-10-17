@@ -3,7 +3,7 @@
         <v-card-text>
             <v-text-field
                 light
-                class="input-on-card"
+                class="input-on-card step-code"
                 :hint="
                     locStr(
                         'Code - Id for this step of process - have to be unique',
@@ -63,7 +63,7 @@ export default Vue.extend({
                 `About to save data code: ${this.code4Edit}, description: ${this.description4Edit}`,
             );
             this.$emit("add", {
-                code: this.code4Edit,
+                code: this.code4Edit.toUpperCase(),
                 name: this.description4Edit,
             });
         },
@@ -93,5 +93,9 @@ export default Vue.extend({
     border-style: none;
     outline-style: none;
     border-color: white !important;
+}
+
+.step-code input {
+    text-transform: uppercase;
 }
 </style>

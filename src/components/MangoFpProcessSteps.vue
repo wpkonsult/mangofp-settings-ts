@@ -20,7 +20,7 @@
                                 :key="state.order"
                                 small
                             >
-                                <v-card>
+                                <v-card v-if="stepInEdit != state.code">
                                     <v-card-text>
                                         <div class="font-weight-normal">
                                             <strong>{{ state.code }}</strong>
@@ -37,11 +37,18 @@
                                         </v-btn>
                                     </v-card-actions>
                                 </v-card>
-                            </v-timeline-item>
-                            <v-timeline-item>
                                 <MangoFpEditStep
-                                    code="CHANGETHIS"
-                                    description="Sasd asdfasdf as"
+                                    v-else
+                                    :code="state.code"
+                                    :description="state.action"
+                                    @close="closeStepEdit"
+                                    @add="updateStepEdit"
+                                />
+                            </v-timeline-item>
+                            <v-timeline-item v-if="newStepModifyOpen">
+                                <MangoFpEditStep
+                                    code=""
+                                    description=""
                                     @close="closeStepEdit"
                                     @add="addStepEdit"
                                 />
@@ -52,7 +59,7 @@
                         <v-btn
                             color="deep-purple lighten-2"
                             text
-                            @click="addState"
+                            @click="openStepAdd"
                         >
                             {{ locStr("Add state") }}
                         </v-btn>
@@ -83,6 +90,7 @@ export default Vue.extend({
     data() {
         return {
             newStepModifyOpen: false,
+            stepInEdit: "",
         };
     },
     methods: {
@@ -90,22 +98,30 @@ export default Vue.extend({
             return locStr(key);
         },
         modifyState: function(stateCode: string) {
-            console.log("About to modify ");
-            console.log(stateCode);
-        },
-        addState: function() {
-            console.log("About to add state");
-        },
-        closeStepEdit: function(param: string) {
-            console.log("Need to close edit: " + param);
+            this.stepInEdit = stateCode;
             this.newStepModifyOpen = false;
         },
-        openStepEdit: function() {
-            this.newStepModifyOpen = true;
+        closeStepEdit: function() {
+            this.newStepModifyOpen = false;
+            this.stepInEdit = "";
         },
-        addStepEdit: function(param: { code: string; name: string }) {
-            console.log("About to add: " + param.code + " name: " + param.name);
-            Actions.addNewState(param.code, param.name);
+        openStepAdd: function() {
+            this.newStepModifyOpen = true;
+            this.stepInEdit = "";
+        },
+        addStepEdit: async function(param: { code: string; name: string }) {
+            const isItDone = await Actions.addNewState(param.code, param.name);
+            if (isItDone) {
+                this.closeStepEdit();
+            }
+        },
+        updateStepEdit: async function(param: { code: string; name: string }) {
+            console.log(`About to modify ${param.name}`);
+            const isItDone = await Actions.updateState(param.code, param.name);
+            this.closeStepEdit();
+            if (isItDone) {
+                this.closeStepEdit();
+            }
         },
     },
 });
