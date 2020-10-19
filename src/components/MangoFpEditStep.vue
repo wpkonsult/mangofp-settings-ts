@@ -2,6 +2,7 @@
     <v-card dark color="#f1f1f1">
         <v-card-text>
             <v-text-field
+                v-if="!code"
                 light
                 class="input-on-card step-code"
                 :hint="
@@ -12,8 +13,12 @@
                 solo
                 dense
                 :label="locStr('Code')"
+                ref="codeField"
                 v-model="code4Edit"
             ></v-text-field>
+            <div v-else class="font-weight-normal step-code-boilerplate">
+                <strong>{{ code }}</strong>
+            </div>
 
             <v-text-field
                 light
@@ -22,6 +27,7 @@
                 solo
                 dense
                 :label="locStr('Description')"
+                ref="nameField"
                 v-model="description4Edit"
             ></v-text-field>
         </v-card-text>
@@ -53,6 +59,16 @@ export default Vue.extend({
             code4Edit: this.code || "",
             description4Edit: this.description || "",
         };
+    },
+    mounted() {
+        let focusedEdit = this.$refs.nameField as HTMLInputElement;
+        if (!this.code) {
+            focusedEdit = this.$refs.codeField as HTMLInputElement;
+        }
+
+        if (focusedEdit) {
+            focusedEdit.focus();
+        }
     },
     methods: {
         locStr: function(key: string): string {
@@ -97,5 +113,10 @@ export default Vue.extend({
 
 .step-code input {
     text-transform: uppercase;
+}
+
+.step-code-boilerplate {
+    color: black;
+    padding-bottom: 10px;
 }
 </style>

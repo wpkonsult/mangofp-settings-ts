@@ -2,7 +2,7 @@
     <v-sheet background-color="transparent" color="basil" elevation="1">
         <v-container pa-0>
             <v-row justify="space-around">
-                <v-card width="600">
+                <v-card width="800">
                     <v-card-title>
                         {{
                             locStr(
@@ -23,11 +23,46 @@
                                 <v-card v-if="stepInEdit != state.code">
                                     <v-card-text>
                                         <div class="font-weight-normal">
+                                            {{ state.order }}.
                                             <strong>{{ state.code }}</strong>
+                                            <span v-if="state.state">
+                                                : {{ state.state }}
+                                            </span>
                                         </div>
-
                                         <div>{{ state.action }}</div>
                                     </v-card-text>
+                                    <v-expansion-panels accordion>
+                                        <v-expansion-panel>
+                                            <v-expansion-panel-header>{{
+                                                locStr("Next steps")
+                                            }}</v-expansion-panel-header>
+                                            <v-expansion-panel-content>
+                                                <MangoFpEditProcess
+                                                    :state="state"
+                                                    :nextStates="
+                                                        possibleNextStates(
+                                                            state.code,
+                                                        )
+                                                    "
+                                                />
+                                            </v-expansion-panel-content>
+                                        </v-expansion-panel>
+                                        <v-expansion-panel>
+                                            <v-expansion-panel-header>{{
+                                                locStr("Email template")
+                                            }}</v-expansion-panel-header>
+                                            <v-expansion-panel-content>
+                                                Lorem ipsum dolor sit amet,
+                                                consectetur adipiscing elit, sed
+                                                do eiusmod tempor incididunt ut
+                                                labore et dolore magna aliqua.
+                                                Ut enim ad minim veniam, quis
+                                                nostrud exercitation ullamco
+                                                laboris nisi ut aliquip ex ea
+                                                commodo consequat.
+                                            </v-expansion-panel-content>
+                                        </v-expansion-panel>
+                                    </v-expansion-panels>
                                     <v-card-actions>
                                         <v-btn
                                             text
@@ -56,11 +91,7 @@
                         </v-timeline>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn
-                            color="deep-purple lighten-2"
-                            text
-                            @click="openStepAdd"
-                        >
+                        <v-btn color="black" text @click="openStepAdd">
                             {{ locStr("Add state") }}
                         </v-btn>
                     </v-card-actions>
@@ -71,15 +102,17 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { StateData } from "@/types";
+import { StateData, NextState } from "@/types";
 import { locStr } from "@/utilities";
 import MangoFpEditStep from "./MangoFpEditStep.vue";
+import MangoFpEditProcess from "./MangoFpEditProcess.vue";
 import * as Actions from "@/actions";
 
 export default Vue.extend({
     name: "MangoFpProcessSteps",
     components: {
         MangoFpEditStep,
+        MangoFpEditProcess,
     },
     props: {
         states: {
@@ -97,6 +130,17 @@ export default Vue.extend({
         locStr: function(key: string): string {
             return locStr(key);
         },
+        possibleNextStates(paramCode: string): NextState[] {
+            const next: NextState[] = [];
+            const loadedStates: StateData[] = this.states;
+            loadedStates.forEach((state: StateData) => {
+                if (state.code !== paramCode) {
+                    next.push({ value: state.code, text: state.state });
+                }
+            });
+            return next;
+        },
+
         modifyState: function(stateCode: string) {
             this.stepInEdit = stateCode;
             this.newStepModifyOpen = false;

@@ -19,6 +19,7 @@
 import Vue from "vue";
 import { locStr } from "@/utilities";
 export default Vue.extend({
+    name: "MangoFpEditProcess",
     props: {
         state: {
             type: Object,
