@@ -9,6 +9,7 @@ export interface Type {
     state: AllStateType;
     addState: Function;
     getAllState: Function;
+    getStateList: Function;
 }
 // eslint-disable-next-line
 export function makeStore(bus: any, debug: boolean): Type {
@@ -27,6 +28,9 @@ export function makeStore(bus: any, debug: boolean): Type {
         },
         getAllState(): AllStateType {
             return this.state;
+        },
+        getStateList(): StateData[] {
+            return this.state.stateList;
         },
     };
 }

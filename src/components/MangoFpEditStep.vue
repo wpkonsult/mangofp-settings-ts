@@ -23,11 +23,24 @@
             <v-text-field
                 light
                 class="input-on-card"
-                :hint="locStr('Description - What is achieved in this step')"
+                :hint="locStr('Name - What is achieved in this step')"
                 solo
                 dense
                 :label="locStr('Description')"
                 ref="nameField"
+                v-model="name4Edit"
+            ></v-text-field>
+            <v-text-field
+                light
+                class="input-on-card"
+                :hint="
+                    locStr(
+                        'Action - What should be done to achieve result of this step',
+                    )
+                "
+                solo
+                dense
+                :label="locStr('Action')"
                 v-model="description4Edit"
             ></v-text-field>
         </v-card-text>
@@ -53,11 +66,15 @@ export default Vue.extend({
         description: {
             type: String,
         },
+        name: {
+            type: String,
+        },
     },
     data() {
         return {
             code4Edit: this.code || "",
             description4Edit: this.description || "",
+            name4Edit: this.name || "",
         };
     },
     mounted() {
@@ -80,7 +97,8 @@ export default Vue.extend({
             );
             this.$emit("add", {
                 code: this.code4Edit.toUpperCase(),
-                name: this.description4Edit,
+                name: this.name4Edit,
+                action: this.description4Edit,
             });
         },
         cancelSaving() {

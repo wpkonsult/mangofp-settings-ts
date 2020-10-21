@@ -30,39 +30,10 @@
                                             </span>
                                         </div>
                                         <div>{{ state.action }}</div>
+                                        <MangoFpEditStepDetails
+                                            :state="state"
+                                        />
                                     </v-card-text>
-                                    <v-expansion-panels accordion>
-                                        <v-expansion-panel>
-                                            <v-expansion-panel-header>{{
-                                                locStr("Next steps")
-                                            }}</v-expansion-panel-header>
-                                            <v-expansion-panel-content>
-                                                <MangoFpEditProcess
-                                                    :state="state"
-                                                    :nextStates="
-                                                        possibleNextStates(
-                                                            state.code,
-                                                        )
-                                                    "
-                                                />
-                                            </v-expansion-panel-content>
-                                        </v-expansion-panel>
-                                        <v-expansion-panel>
-                                            <v-expansion-panel-header>{{
-                                                locStr("Email template")
-                                            }}</v-expansion-panel-header>
-                                            <v-expansion-panel-content>
-                                                Lorem ipsum dolor sit amet,
-                                                consectetur adipiscing elit, sed
-                                                do eiusmod tempor incididunt ut
-                                                labore et dolore magna aliqua.
-                                                Ut enim ad minim veniam, quis
-                                                nostrud exercitation ullamco
-                                                laboris nisi ut aliquip ex ea
-                                                commodo consequat.
-                                            </v-expansion-panel-content>
-                                        </v-expansion-panel>
-                                    </v-expansion-panels>
                                     <v-card-actions>
                                         <v-btn
                                             text
@@ -102,17 +73,17 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { StateData, NextState } from "@/types";
+import { StateData } from "@/types";
 import { locStr } from "@/utilities";
 import MangoFpEditStep from "./MangoFpEditStep.vue";
-import MangoFpEditProcess from "./MangoFpEditProcess.vue";
+import MangoFpEditStepDetails from "./MangoFpEditStepDetails.vue";
 import * as Actions from "@/actions";
 
 export default Vue.extend({
     name: "MangoFpProcessSteps",
     components: {
         MangoFpEditStep,
-        MangoFpEditProcess,
+        MangoFpEditStepDetails,
     },
     props: {
         states: {
@@ -130,17 +101,6 @@ export default Vue.extend({
         locStr: function(key: string): string {
             return locStr(key);
         },
-        possibleNextStates(paramCode: string): NextState[] {
-            const next: NextState[] = [];
-            const loadedStates: StateData[] = this.states;
-            loadedStates.forEach((state: StateData) => {
-                if (state.code !== paramCode) {
-                    next.push({ value: state.code, text: state.state });
-                }
-            });
-            return next;
-        },
-
         modifyState: function(stateCode: string) {
             this.stepInEdit = stateCode;
             this.newStepModifyOpen = false;
@@ -153,8 +113,16 @@ export default Vue.extend({
             this.newStepModifyOpen = true;
             this.stepInEdit = "";
         },
-        addStepEdit: async function(param: { code: string; name: string }) {
-            const isItDone = await Actions.addNewState(param.code, param.name);
+        addStepEdit: async function(param: {
+            code: string;
+            name: string;
+            action: string;
+        }) {
+            const isItDone = await Actions.addNewState(
+                param.code,
+                param.name,
+                param.action,
+            );
             if (isItDone) {
                 this.closeStepEdit();
             }
