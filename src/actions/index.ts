@@ -5,14 +5,14 @@ import * as Store from "@/store";
 
 function _createState(
     code: string,
-    name: string,
     action: string,
+    state: string,
     order: number,
 ): StateData {
     const ret: StateData = {
         order,
         code,
-        state: name,
+        state: state,
         action: action,
         next: [],
     };
@@ -21,19 +21,20 @@ function _createState(
 
 export async function addNewState(
     code: string,
-    name: string,
     action: string,
+    state: string,
 ): Promise<boolean> {
     const allStates: Store.AllStateType = dataStore.getAllState();
     const order = allStates.stateList.length + 1;
-    const newState = _createState(code, name, action, order);
+    const newState = _createState(code, action, state, order);
     dataStore.addState(newState);
     return true;
 }
 
 export async function updateState(
     code: string,
-    name: string,
+    action: string,
+    state: string,
 ): Promise<boolean> {
     const allStates: Store.AllStateType = dataStore.getAllState();
     const index = allStates.stateList.findIndex(st => st.code === code);
@@ -42,9 +43,10 @@ export async function updateState(
         return false;
     }
     const foundState = allStates.stateList[index];
-    foundState.action = name;
-    console.log("Muudan steitti: " + JSON.stringify(foundState));
+    console.log(
+        "Muudan steiti: " + JSON.stringify({ ...foundState, action, state }),
+    );
 
-    allStates.stateList[index] = { ...foundState };
+    allStates.stateList[index] = { ...foundState, action, state };
     return true;
 }

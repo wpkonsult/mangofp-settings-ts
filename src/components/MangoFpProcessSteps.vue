@@ -21,15 +21,16 @@
                                 small
                             >
                                 <v-card v-if="stepInEdit != state.code">
+                                    <v-card-title class="pl-5">
+                                        {{ state.order }}.{{ state.code }}
+                                    </v-card-title>
+                                    <v-card-subtitle class="pl-5">
+                                        {{ state.action }}
+                                        <span v-if="state.state">
+                                            => {{ state.state }}
+                                        </span>
+                                    </v-card-subtitle>
                                     <v-card-text>
-                                        <div class="font-weight-normal">
-                                            {{ state.order }}.
-                                            <strong>{{ state.code }}</strong>
-                                            <span v-if="state.state">
-                                                : {{ state.state }}
-                                            </span>
-                                        </div>
-                                        <div>{{ state.action }}</div>
                                         <MangoFpEditStepDetails
                                             :state="state"
                                         />
@@ -46,7 +47,8 @@
                                 <MangoFpEditStep
                                     v-else
                                     :code="state.code"
-                                    :description="state.action"
+                                    :action="state.action"
+                                    :state="state.state"
                                     @close="closeStepEdit"
                                     @add="updateStepEdit"
                                 />
@@ -115,21 +117,29 @@ export default Vue.extend({
         },
         addStepEdit: async function(param: {
             code: string;
-            name: string;
             action: string;
+            state: string;
         }) {
             const isItDone = await Actions.addNewState(
                 param.code,
-                param.name,
                 param.action,
+                param.state,
             );
             if (isItDone) {
                 this.closeStepEdit();
             }
         },
-        updateStepEdit: async function(param: { code: string; name: string }) {
-            console.log(`About to modify ${param.name}`);
-            const isItDone = await Actions.updateState(param.code, param.name);
+        updateStepEdit: async function(param: {
+            code: string;
+            action: string;
+            state: string;
+        }) {
+            console.log(`About to modify ${param.code}`);
+            const isItDone = await Actions.updateState(
+                param.code,
+                param.action,
+                param.state,
+            );
             this.closeStepEdit();
             if (isItDone) {
                 this.closeStepEdit();

@@ -1,5 +1,5 @@
 <template>
-    <v-expansion-panels accordion>
+    <v-expansion-panels accordion >
         <v-expansion-panel>
             <v-expansion-panel-header>
                 <div class="next-state-accordion-header">

@@ -19,17 +19,6 @@
             <div v-else class="font-weight-normal step-code-boilerplate">
                 <strong>{{ code }}</strong>
             </div>
-
-            <v-text-field
-                light
-                class="input-on-card"
-                :hint="locStr('Name - What is achieved in this step')"
-                solo
-                dense
-                :label="locStr('Description')"
-                ref="nameField"
-                v-model="name4Edit"
-            ></v-text-field>
             <v-text-field
                 light
                 class="input-on-card"
@@ -41,7 +30,17 @@
                 solo
                 dense
                 :label="locStr('Action')"
-                v-model="description4Edit"
+                v-model="action4Edit"
+            ></v-text-field>
+            <v-text-field
+                light
+                class="input-on-card"
+                :hint="locStr('State - What is achieved in this step')"
+                solo
+                dense
+                :label="locStr('Description')"
+                ref="stateField"
+                v-model="state4Edit"
             ></v-text-field>
         </v-card-text>
         <v-card-actions>
@@ -63,22 +62,22 @@ export default Vue.extend({
         code: {
             type: String,
         },
-        description: {
+        action: {
             type: String,
         },
-        name: {
+        state: {
             type: String,
         },
     },
     data() {
         return {
             code4Edit: this.code || "",
-            description4Edit: this.description || "",
-            name4Edit: this.name || "",
+            action4Edit: this.action || "",
+            state4Edit: this.state || "",
         };
     },
     mounted() {
-        let focusedEdit = this.$refs.nameField as HTMLInputElement;
+        let focusedEdit = this.$refs.stateField as HTMLInputElement;
         if (!this.code) {
             focusedEdit = this.$refs.codeField as HTMLInputElement;
         }
@@ -93,12 +92,12 @@ export default Vue.extend({
         },
         saveData() {
             console.log(
-                `About to save data code: ${this.code4Edit}, description: ${this.description4Edit}`,
+                `About to save data code: ${this.code4Edit}, description: ${this.state4Edit}`,
             );
             this.$emit("add", {
                 code: this.code4Edit.toUpperCase(),
-                name: this.name4Edit,
-                action: this.description4Edit,
+                action: this.action4Edit,
+                state: this.state4Edit,
             });
         },
         cancelSaving() {
