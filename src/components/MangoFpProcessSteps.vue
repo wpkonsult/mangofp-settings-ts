@@ -134,7 +134,6 @@ export default Vue.extend({
             action: string;
             state: string;
         }) {
-            console.log(`About to modify ${param.code}`);
             const isItDone = await Actions.updateState(
                 param.code,
                 param.action,

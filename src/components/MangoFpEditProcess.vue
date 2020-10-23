@@ -47,13 +47,14 @@ export default Vue.extend({
             return locStr(key);
         },
         saveData() {
-            console.log(
-                "About to save next steps: " + this.next4Edit.join(", "),
-            );
+			this.$emit("add", {
+				code: this.state.code,
+				next: this.next4Edit
+			});
         },
         cancelSaving() {
             this.next4Edit = [...this.state.next];
-            console.log("About to cancel saving ");
+            this.$emit("close");
         },
     },
 });

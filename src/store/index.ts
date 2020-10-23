@@ -8,6 +8,7 @@ export interface Type {
     debug: boolean;
     state: AllStateType;
     addState: Function;
+    updateNextState: Function;
     getAllState: Function;
     getStateList: Function;
 }
@@ -23,7 +24,29 @@ export function makeStore(bus: any, debug: boolean): Type {
                     "Will add state data: " + JSON.stringify(stateData),
                 );
             }
+            //todo add api call
             this.state.stateList.push(stateData);
+            return true;
+        },
+        async updateNextState(
+            code: string,
+            nextStates: string[],
+        ): Promise<boolean> {
+            if (debug) {
+                console.log(
+                    "Will update next states of " +
+                        code +
+                        " to " +
+                        nextStates.join(", "),
+                );
+            }
+            const step = this.state.stateList.find(obj => obj.code === code);
+            if (!step) {
+                console.log("Did not find step with code " + code);
+                return false;
+            }
+            //todo add api call
+            step.next = nextStates;
             return true;
         },
         getAllState(): AllStateType {

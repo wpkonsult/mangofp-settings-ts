@@ -43,10 +43,6 @@ export async function updateState(
         return false;
     }
     const foundState = allStates.stateList[index];
-    console.log(
-        "Muudan steiti: " + JSON.stringify({ ...foundState, action, state }),
-    );
-
     allStates.stateList[index] = { ...foundState, action, state };
     return true;
 }
