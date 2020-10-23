@@ -1,6 +1,6 @@
 import { dataStore } from "@/main";
 
-import { StateData } from "@/types";
+import { StateData, makeTemplateObj } from "@/types";
 import * as Store from "@/store";
 
 function _createState(
@@ -15,6 +15,7 @@ function _createState(
         state: state,
         action: action,
         next: [],
+        template: makeTemplateObj(),
     };
     return ret;
 }

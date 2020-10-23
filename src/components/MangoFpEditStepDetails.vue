@@ -24,17 +24,14 @@
                 locStr("Email template")
             }}</v-expansion-panel-header>
             <v-expansion-panel-content>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
+                {{ email4Edit }}
             </v-expansion-panel-content>
         </v-expansion-panel>
     </v-expansion-panels>
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { StateData, NextState } from "@/types";
+import { StateData, NextState, makeTemplateObj } from "@/types";
 import { locStr } from "@/utilities";
 import { VExpansionPanel } from "vuetify/lib";
 import MangoFpEditProcess from "./MangoFpEditProcess.vue";
@@ -69,9 +66,11 @@ export default Vue.extend({
     },
     data() {
         const states: StateData[] = dataStore.getStateList();
+        const template = this.state.template || makeTemplateObj();
         return {
             states,
             saveInProgress: false,
+            email4Edit: template.template || "===none===",
         };
     },
     methods: {
