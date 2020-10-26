@@ -5,7 +5,7 @@
                 <div class="next-state-accordion-header">
                     {{ locStr("Next steps") }}:
                 </div>
-                <div>
+                <div class="next-state-header-blrplt">
                     {{ nextStepsNames(state.next) }}
                 </div>
             </v-expansion-panel-header>
@@ -19,12 +19,38 @@
                 />
             </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel>
-            <v-expansion-panel-header>{{
-                locStr("Email template")
-            }}</v-expansion-panel-header>
+        <v-expansion-panel ref="templatePanel">
+            <v-expansion-panel-header>
+                <strong> {{ locStr("Email template") }}</strong>
+            </v-expansion-panel-header>
             <v-expansion-panel-content>
-                {{ email4Edit }}
+                <v-card class="pa-0" flat>
+                    <v-card-text>
+                        <v-text-field
+							class="addresses-field"
+                            solo
+                            :label="locStr('Addresses')"
+                            :hint="locStr('CC addresses for archiving options')"
+                            v-model="addresses4Edit"
+                        ></v-text-field>
+                        <v-textarea
+                            solo
+                            rows="10"
+                            full-width
+                            v-model="email4Edit"
+                            hint="Template of the email to be sent to the contact when action of this step is executed"
+                        >
+                        </v-textarea>
+                    </v-card-text>
+                    <v-card-actions class="pl-0" color="">
+                        <v-btn outlined text @click="saveTemplate">
+                            {{ locStr("Confirm") }}
+                        </v-btn>
+                        <v-btn outlined text @click="cancelTemplate">
+                            {{ locStr("Cancel") }}
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
             </v-expansion-panel-content>
         </v-expansion-panel>
     </v-expansion-panels>
@@ -70,7 +96,8 @@ export default Vue.extend({
         return {
             states,
             saveInProgress: false,
-            email4Edit: template.template || "===none===",
+            email4Edit: template.template,
+            addresses4Edit: template.addresses.join("; "),
         };
     },
     methods: {
@@ -118,6 +145,57 @@ export default Vue.extend({
             const thePanel = this.$refs.nextStepsPanel as ExpansionPanelType;
             thePanel.toggle();
         },
+        closeTemplatePane() {
+            const thePanel = this.$refs.templatePanel as ExpansionPanelType;
+            thePanel.toggle();
+        },
+        cancelTemplate() {
+            const template = this.state.template || makeTemplateObj();
+            this.email4Edit = template.template;
+            this.addresses4Edit = template.addresses.join("; ");
+            this.closeTemplatePane();
+        },
+        async saveTemplate() {
+            console.log(`About to save template`);
+            console.log(this.email4Edit);
+            const validatedEmails = await this.validateAndGetEmailAddresses(
+                this.addresses4Edit,
+            ).catch(err => {
+                console.log(err.message);
+                return false;
+            });
+            if (!validatedEmails) {
+                return false;
+            }
+
+            const isItDone = await dataStore.updateEmailTemplate(
+                this.state.code,
+                this.email4Edit,
+                validatedEmails,
+            );
+
+            if (isItDone) {
+                this.closeTemplatePane();
+            }
+        },
+        async validateAndGetEmailAddresses(
+            addresses: string,
+        ): Promise<string[]> {
+            const emails = addresses.split(";").map((elem: string) => {
+                const email = elem.trim();
+                if (!email) {
+                    return "";
+                }
+                const RegValidate = /([a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
+                if (!RegValidate.test(email)) {
+                    throw new Error(
+                        email + " " + this.locStr("is not proper email"),
+                    );
+                }
+                return email;
+            });
+            return emails.filter((elem: string) => elem);
+        },
     },
 });
 </script>
@@ -127,5 +205,22 @@ export default Vue.extend({
     font-weight: bold;
     min-width: fit-content;
     padding-right: 10px;
+}
+
+.next-state-header-blrplt {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+textarea:focus {
+    color: black;
+    outline-style: none;
+    border-style: none;
+    box-shadow: none;
+}
+
+.addresses-field input,
+.addresses-field label {
+	padding-left: 10px !important;
 }
 </style>

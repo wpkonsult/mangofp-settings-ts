@@ -20,7 +20,10 @@
                                 :key="state.order"
                                 small
                             >
-                                <v-card v-if="stepInEdit != state.code">
+                                <v-card
+                                    class="steps-background"
+                                    v-if="stepInEdit != state.code"
+                                >
                                     <v-card-title class="pl-5">
                                         {{ state.order }}.{{ state.code }}
                                     </v-card-title>
@@ -147,3 +150,11 @@ export default Vue.extend({
     },
 });
 </script>
+<style>
+.steps-background {
+    background-color: #f1f1f1 !important;
+    border-color: #f1f1f1 !important;
+    margin-top: -7px;
+    margin-left: -10px;
+}
+</style>

@@ -11,6 +11,7 @@ export interface Type {
     updateNextState: Function;
     getAllState: Function;
     getStateList: Function;
+    updateEmailTemplate: Function;
 }
 // eslint-disable-next-line
 export function makeStore(bus: any, debug: boolean): Type {
@@ -49,6 +50,27 @@ export function makeStore(bus: any, debug: boolean): Type {
             step.next = nextStates;
             return true;
         },
+
+        async updateEmailTemplate(
+            code: string,
+            emailTemplate: string,
+            addresses?: string[],
+        ): Promise<boolean> {
+            if (debug) {
+                console.log(`Will update email template`);
+            }
+            const step = this.state.stateList.find(obj => obj.code === code);
+            if (!step) {
+                console.log("Did not find step with code " + code);
+                return false;
+            }
+            //todo add api call
+            // <==
+            step.template.template = emailTemplate;
+            step.template.addresses = addresses || [];
+            return true;
+        },
+
         getAllState(): AllStateType {
             return this.state;
         },

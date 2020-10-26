@@ -19,8 +19,6 @@
                 </v-alert>
                 <v-tabs class="settings-main-tabs" vertical>
                     <v-tab>{{ locStr("Define process steps") }}</v-tab>
-                    <v-tab>{{ locStr("Next steps from every step") }}</v-tab>
-                    <v-tab>{{ locStr("Templates") }}</v-tab>
                     <v-tab>{{ locStr("Parameters") }}</v-tab>
                     <v-tab-item transition="false" reverse-transition="false">
                         <MangoFpProcessSteps :states="states" />
