@@ -1,4 +1,4 @@
-import { StateData } from "@/types";
+import { StateData, makeTemplateObj } from "@/types";
 
 export interface AllStateType {
     stateList: StateData[];
@@ -63,7 +63,11 @@ export function makeStore(bus: any, debug: boolean): Type {
             if (!step) {
                 console.log("Did not find step with code " + code);
                 return false;
-            }
+			}
+
+			if (!step.template) {
+				step.template = makeTemplateObj();
+			}
             //todo add api call
             // <==
             step.template.template = emailTemplate;
