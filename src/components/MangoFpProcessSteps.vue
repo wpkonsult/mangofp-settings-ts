@@ -35,6 +35,33 @@
                                             :state="state"
                                         />
                                     </v-card-text>
+                                    <v-card-actions>
+                                        <v-btn
+                                            text
+                                            @click="deleteStep(state.code)"
+                                        >
+                                            {{ locStr("Delete") }}
+                                        </v-btn>
+                                        <div class="reordering">
+                                            <span>
+                                                {{ locStr("Reorder") }}
+                                            </span>
+                                            <v-btn
+                                                class="ml-2 pa-0"
+                                                text
+                                                @click="orderStepUp(state.code)"
+                                            >
+                                                {{ locStr("Up") }}</v-btn
+                                            >
+                                            <v-btn
+                                                class="ml-2 pa-0"
+                                                text
+                                                @click="orderStepDown(state.code)"
+                                            >
+                                                {{ locStr("Down") }}</v-btn
+                                            >
+                                        </div>
+                                    </v-card-actions>
                                 </v-card>
                             </v-timeline-item>
                             <v-timeline-item v-if="newStepModifyOpen">
@@ -121,6 +148,18 @@ export default Vue.extend({
                 this.closeStepEdit();
             }
         },
+        deleteStep: async function(code: string) {
+            console.log("delete");
+            return true;
+        },
+        orderStepUp: async function(code: string) {
+            console.log("Order up");
+            return true;
+        },
+        orderStepDown: async function(code: string) {
+            console.log("Order down");
+            return true;
+        },
     },
 });
 </script>
@@ -130,5 +169,10 @@ export default Vue.extend({
     border-color: #f1f1f1 !important;
     margin-top: -7px;
     margin-left: -10px;
+}
+
+.reordering {
+    margin-left: auto;
+    padding-right: 10px;
 }
 </style>

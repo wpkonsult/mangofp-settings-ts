@@ -184,12 +184,9 @@ export default Vue.extend({
             this.closeTemplatePane();
         },
         async saveTemplate() {
-            console.log(`About to save template`);
-            console.log(this.email4Edit);
             const validatedEmails = await this.validateAndGetEmailAddresses(
                 this.addresses4Edit,
             ).catch(err => {
-                console.log(err.message);
                 return false;
             });
             if (!validatedEmails) {
