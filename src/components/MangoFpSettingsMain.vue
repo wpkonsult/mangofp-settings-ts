@@ -74,4 +74,35 @@ export default Vue.extend({
     },
 });
 </script>
-<style src="@/styles/global.css"></style>
+<style>
+.main {
+    background-color: #f1f1f1 !important;
+    color: #444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 13px;
+    line-height: 1.4em;
+}
+
+h1 {
+    font-size: 23px;
+    font-weight: 400;
+    margin: 0;
+    padding: 9px 0 4px 0;
+    line-height: 1.3;
+}
+
+h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 2.1em;
+}
+
+.settings-main-tabs .v-tab {
+    text-align: left !important;
+    justify-content: left !important;
+    text-transform: none !important;
+}
+</style>

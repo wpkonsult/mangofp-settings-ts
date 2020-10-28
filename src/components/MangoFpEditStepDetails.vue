@@ -1,10 +1,31 @@
 <template>
     <v-expansion-panels accordion>
+        <v-expansion-panel ref="infoPanel">
+            <v-expansion-panel-header>
+                <div class="step-panel-header">
+                    {{ state.order }}.{{ state.code }}:
+                    {{
+                        locStr("Action" + ": ") +
+                            state.action +
+                            " => " +
+                            locStr(" State" + ": ") +
+                            state.state
+                    }}
+                </div>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+                <MangoFpEditStep
+                    :code="state.code"
+                    :action="state.action"
+                    :state="state.state"
+                    @close="closeInfoPane"
+                    @add="updateInfoEdit"
+                />
+            </v-expansion-panel-content>
+        </v-expansion-panel>
         <v-expansion-panel ref="nextStepsPanel">
             <v-expansion-panel-header>
-                <div class="next-state-accordion-header">
-                    {{ locStr("Next steps") }}:
-                </div>
+                <div class="step-panel-header">{{ locStr("Next steps") }}:</div>
                 <div class="next-state-header-blrplt">
                     {{ nextStepsNames(state.next) }}
                 </div>
@@ -27,7 +48,7 @@
                 <v-card class="pa-0" flat>
                     <v-card-text>
                         <v-text-field
-							class="addresses-field"
+                            class="step-text-field"
                             solo
                             :label="locStr('Addresses')"
                             :hint="locStr('CC addresses for archiving options')"
@@ -61,7 +82,9 @@ import { StateData, NextState, makeTemplateObj } from "@/types";
 import { locStr } from "@/utilities";
 import { VExpansionPanel } from "vuetify/lib";
 import MangoFpEditProcess from "./MangoFpEditProcess.vue";
+import MangoFpEditStep from "./MangoFpEditStep.vue";
 import { dataStore } from "@/main";
+import * as Actions from "@/actions";
 
 //Define type that covers functions used for references VExpansionPanel (so that any can be avoided)
 interface ExpansionPanelType extends InstanceType<typeof VExpansionPanel> {
@@ -84,6 +107,7 @@ export default Vue.extend({
     name: "MangoFpEditStepDetails",
     components: {
         MangoFpEditProcess,
+        MangoFpEditStep,
     },
     props: {
         state: {
@@ -149,6 +173,10 @@ export default Vue.extend({
             const thePanel = this.$refs.templatePanel as ExpansionPanelType;
             thePanel.toggle();
         },
+        closeInfoPane() {
+            const thePanel = this.$refs.infoPanel as ExpansionPanelType;
+            thePanel.toggle();
+        },
         cancelTemplate() {
             const template = this.state.template || makeTemplateObj();
             this.email4Edit = template.template;
@@ -195,12 +223,28 @@ export default Vue.extend({
                 return email;
             });
             return emails.filter((elem: string) => elem);
-        },
+		},
+		async updateInfoEdit(param: {
+            code: string;
+            action: string;
+            state: string;
+        }) {
+            const isItDone = await Actions.updateState(
+                param.code,
+                param.action,
+                param.state,
+            );
+            if (isItDone) {
+                this.closeInfoPane();
+			}
+			console.log('Update lõpetab');
+
+		},
     },
 });
 </script>
 <style>
-.next-state-accordion-header {
+.step-panel-header {
     flex-grow: inherit !important;
     font-weight: bold;
     min-width: fit-content;
@@ -219,8 +263,8 @@ textarea:focus {
     box-shadow: none;
 }
 
-.addresses-field input,
-.addresses-field label {
-	padding-left: 10px !important;
+.step-text-field input,
+.step-text-field label {
+    padding-left: 10px !important;
 }
 </style>

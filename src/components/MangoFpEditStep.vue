@@ -1,6 +1,6 @@
 <template>
     <v-card dark color="#f1f1f1">
-        <v-card-text>
+        <v-card-text class="pb-0">
             <v-text-field
                 v-if="!code"
                 light
@@ -16,9 +16,6 @@
                 ref="codeField"
                 v-model="code4Edit"
             ></v-text-field>
-            <div v-else class="font-weight-normal step-code-boilerplate">
-                <strong>{{ code }}</strong>
-            </div>
             <v-text-field
                 light
                 class="input-on-card"
@@ -98,7 +95,10 @@ export default Vue.extend({
             });
         },
         cancelSaving() {
-            this.$emit("close", "test");
+            this.code4Edit = this.code;
+            this.action4Edit = this.action;
+            this.state4Edit = this.state;
+            this.$emit("close");
         },
     },
 });

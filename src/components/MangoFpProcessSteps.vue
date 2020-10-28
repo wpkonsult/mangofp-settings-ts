@@ -20,10 +20,7 @@
                                 :key="state.order"
                                 small
                             >
-                                <v-card
-                                    class="steps-background"
-                                    v-if="stepInEdit != state.code"
-                                >
+                                <v-card class="steps-background">
                                     <v-card-title class="pl-5">
                                         {{ state.order }}.{{ state.code }}
                                     </v-card-title>
@@ -38,23 +35,7 @@
                                             :state="state"
                                         />
                                     </v-card-text>
-                                    <v-card-actions>
-                                        <v-btn
-                                            text
-                                            @click="modifyState(state.code)"
-                                        >
-                                            {{ locStr("Modify") }}
-                                        </v-btn>
-                                    </v-card-actions>
                                 </v-card>
-                                <MangoFpEditStep
-                                    v-else
-                                    :code="state.code"
-                                    :action="state.action"
-                                    :state="state.state"
-                                    @close="closeStepEdit"
-                                    @add="updateStepEdit"
-                                />
                             </v-timeline-item>
                             <v-timeline-item v-if="newStepModifyOpen">
                                 <MangoFpEditStep
@@ -99,24 +80,17 @@ export default Vue.extend({
     data() {
         return {
             newStepModifyOpen: false,
-            stepInEdit: "",
         };
     },
     methods: {
         locStr: function(key: string): string {
             return locStr(key);
         },
-        modifyState: function(stateCode: string) {
-            this.stepInEdit = stateCode;
-            this.newStepModifyOpen = false;
-        },
         closeStepEdit: function() {
             this.newStepModifyOpen = false;
-            this.stepInEdit = "";
         },
         openStepAdd: function() {
             this.newStepModifyOpen = true;
-            this.stepInEdit = "";
         },
         addStepEdit: async function(param: {
             code: string;

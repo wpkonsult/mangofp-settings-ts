@@ -12,6 +12,7 @@ export interface Type {
     getAllState: Function;
     getStateList: Function;
     updateEmailTemplate: Function;
+    updateOrInsertStateInfo: Function;
 }
 // eslint-disable-next-line
 export function makeStore(bus: any, debug: boolean): Type {
@@ -25,7 +26,6 @@ export function makeStore(bus: any, debug: boolean): Type {
                     "Will add state data: " + JSON.stringify(stateData),
                 );
             }
-            //todo add api call
             this.state.stateList.push(stateData);
             return true;
         },
@@ -46,7 +46,6 @@ export function makeStore(bus: any, debug: boolean): Type {
                 console.log("Did not find step with code " + code);
                 return false;
             }
-            //todo add api call
             step.next = nextStates;
             return true;
         },
@@ -63,15 +62,40 @@ export function makeStore(bus: any, debug: boolean): Type {
             if (!step) {
                 console.log("Did not find step with code " + code);
                 return false;
-			}
+            }
 
-			if (!step.template) {
-				step.template = makeTemplateObj();
-			}
-            //todo add api call
-            // <==
+            if (!step.template) {
+                step.template = makeTemplateObj();
+            }
             step.template.template = emailTemplate;
             step.template.addresses = addresses || [];
+            return true;
+        },
+        async updateOrInsertStateInfo(
+            code: string,
+            action: string,
+            state: string,
+        ): Promise<boolean> {
+            if (debug) {
+                console.log(`Will update state info`);
+            }
+            const step = this.state.stateList.find(obj => obj.code === code);
+            if (!step) {
+                console.log(
+                    "Did not find step with code " + code + ". Will add",
+                );
+                const newStep: StateData = {
+                    order: this.state.stateList.length + 1,
+                    code,
+                    state,
+                    action,
+                    next: [],
+                    template: makeTemplateObj(),
+                };
+                return this.addState(newStep);
+            }
+            step.action = action;
+            step.state = state;
             return true;
         },
 
