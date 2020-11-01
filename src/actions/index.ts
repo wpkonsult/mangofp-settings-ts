@@ -1,8 +1,5 @@
 import { dataStore } from "@/main";
 
-import { StateData, makeTemplateObj } from "@/types";
-import * as Store from "@/store";
-
 export async function addNewState(
     code: string,
     action: string,
@@ -19,4 +16,9 @@ export async function updateState(
 ): Promise<boolean> {
     //TODO make api call
     return dataStore.updateOrInsertStateInfo(code, action, state);
+}
+
+export async function reOrderState(code: string, order: "up" | "down") {
+    //TODO make api call
+    return dataStore.updateOrder(code, order);
 }

@@ -38,10 +38,60 @@
                                     <v-card-actions>
                                         <v-btn
                                             text
-                                            @click="deleteStep(state.code)"
+                                            @click.stop="
+                                                deleteDialogOpen = true
+                                            "
                                         >
-                                            {{ locStr("Delete") }}
+                                            {{ locStr("Delete1") }}
                                         </v-btn>
+                                        <v-dialog
+                                            v-model="deleteDialogOpen"
+                                            max-width="290"
+											:retain-focus="false"
+											overlay-opacity=0.5
+											overlay-color="white"
+											light
+                                        >
+                                            <v-card>
+                                                <v-card-title class="headline">
+                                                    Use Google's location
+                                                    service?
+                                                </v-card-title>
+
+                                                <v-card-text>
+                                                    Let Google help apps
+                                                    determine location. This
+                                                    means sending anonymous
+                                                    location data to Google,
+                                                    even when no apps are
+                                                    running.
+                                                </v-card-text>
+
+                                                <v-card-actions>
+                                                    <v-spacer></v-spacer>
+
+                                                    <v-btn
+                                                        color="green darken-1"
+                                                        text
+                                                        @click="
+                                                            deleteDialogOpen = false
+                                                        "
+                                                    >
+                                                        Disagree
+                                                    </v-btn>
+
+                                                    <v-btn
+                                                        color="green darken-1"
+                                                        text
+                                                        @click="
+                                                            deleteDialogOpen = false
+                                                        "
+                                                    >
+                                                        Agree
+                                                    </v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-dialog>
                                         <div class="reordering">
                                             <span>
                                                 {{ locStr("Reorder") }}
@@ -56,7 +106,9 @@
                                             <v-btn
                                                 class="ml-2 pa-0"
                                                 text
-                                                @click="orderStepDown(state.code)"
+                                                @click="
+                                                    orderStepDown(state.code)
+                                                "
                                             >
                                                 {{ locStr("Down") }}</v-btn
                                             >
@@ -107,6 +159,7 @@ export default Vue.extend({
     data() {
         return {
             newStepModifyOpen: false,
+            deleteDialogOpen: false,
         };
     },
     methods: {
@@ -149,16 +202,17 @@ export default Vue.extend({
             }
         },
         deleteStep: async function(code: string) {
-            console.log("delete");
+            console.log("delete code: " + code);
+            this.deleteDialogOpen = false;
             return true;
         },
         orderStepUp: async function(code: string) {
             console.log("Order up");
-            return true;
+            return Actions.reOrderState(code, "up");
         },
         orderStepDown: async function(code: string) {
             console.log("Order down");
-            return true;
+            return Actions.reOrderState(code, "down");
         },
     },
 });

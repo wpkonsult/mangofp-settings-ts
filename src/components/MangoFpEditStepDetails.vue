@@ -187,6 +187,7 @@ export default Vue.extend({
             const validatedEmails = await this.validateAndGetEmailAddresses(
                 this.addresses4Edit,
             ).catch(err => {
+                console.log("Catched error: " + err.message);
                 return false;
             });
             if (!validatedEmails) {
@@ -220,8 +221,8 @@ export default Vue.extend({
                 return email;
             });
             return emails.filter((elem: string) => elem);
-		},
-		async updateInfoEdit(param: {
+        },
+        async updateInfoEdit(param: {
             code: string;
             action: string;
             state: string;
@@ -233,10 +234,9 @@ export default Vue.extend({
             );
             if (isItDone) {
                 this.closeInfoPane();
-			}
-			console.log('Update lõpetab');
-
-		},
+            }
+            console.log("Update lõpetab");
+        },
     },
 });
 </script>

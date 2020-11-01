@@ -13,6 +13,7 @@ export interface Type {
     getStateList: Function;
     updateEmailTemplate: Function;
     updateOrInsertStateInfo: Function;
+    updateOrder: Function;
 }
 // eslint-disable-next-line
 export function makeStore(bus: any, debug: boolean): Type {
@@ -104,6 +105,45 @@ export function makeStore(bus: any, debug: boolean): Type {
         },
         getStateList(): StateData[] {
             return this.state.stateList;
+        },
+
+        updateOrder(code: string, order: "up" | "down"): boolean {
+            const step = this.state.stateList.find(obj => obj.code === code);
+            if (!step) {
+                console.log("Did not find step with code " + code);
+                return false;
+            }
+            if (step.order === 1 && order === "up") {
+                return true;
+            }
+
+            if (
+                step.order === this.state.stateList.length &&
+                order === "down"
+            ) {
+                return true;
+            }
+
+            let toSwapOrder = step.order - 1;
+            if (order === "down") {
+                toSwapOrder = step.order + 1;
+            }
+
+            const swapStep = this.state.stateList.find(
+                obj => obj.order === toSwapOrder,
+            );
+
+            if (!swapStep) {
+                console.log(`Unable to find element with order: ${swapStep}`);
+                return false;
+            }
+
+            swapStep.order = step.order;
+            step.order = toSwapOrder;
+
+            this.state.stateList[swapStep.order - 1] = swapStep;
+            this.state.stateList[step.order - 1] = step;
+            return true;
         },
     };
 }
