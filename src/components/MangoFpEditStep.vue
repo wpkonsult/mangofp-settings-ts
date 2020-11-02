@@ -2,21 +2,6 @@
     <v-card dark color="#f1f1f1">
         <v-card-text class="pb-0">
             <v-text-field
-                v-if="!code"
-                light
-                class="input-on-card step-code"
-                :hint="
-                    locStr(
-                        'Code - Id for this step of process - have to be unique',
-                    )
-                "
-                solo
-                dense
-                :label="locStr('Code')"
-                ref="codeField"
-                v-model="code4Edit"
-            ></v-text-field>
-            <v-text-field
                 light
                 class="input-on-card"
                 :hint="

@@ -22,14 +22,8 @@
                             >
                                 <v-card class="steps-background">
                                     <v-card-title class="pl-5">
-                                        {{ state.order }}.{{ state.code }}
+                                        {{ state.order }}.{{ state.action }}
                                     </v-card-title>
-                                    <v-card-subtitle class="pl-5">
-                                        {{ state.action }}
-                                        <span v-if="state.state">
-                                            => {{ state.state }}
-                                        </span>
-                                    </v-card-subtitle>
                                     <v-card-text>
                                         <MangoFpEditStepDetails
                                             :state="state"
