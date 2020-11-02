@@ -14,6 +14,7 @@ export interface Type {
     updateEmailTemplate: Function;
     updateOrInsertStateInfo: Function;
     updateOrder: Function;
+    deleteState: Function;
 }
 // eslint-disable-next-line
 export function makeStore(bus: any, debug: boolean): Type {
@@ -143,6 +144,11 @@ export function makeStore(bus: any, debug: boolean): Type {
 
             this.state.stateList[swapStep.order - 1] = swapStep;
             this.state.stateList[step.order - 1] = step;
+            return true;
+        },
+
+        async deleteState(code: string): Promise<boolean> {
+            console.log(`Store deletes ${code}`);
             return true;
         },
     };

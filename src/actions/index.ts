@@ -18,6 +18,11 @@ export async function updateState(
     return dataStore.updateOrInsertStateInfo(code, action, state);
 }
 
+export async function deleteState(code: string) {
+    console.log("About to delete state " + code);
+    return dataStore.deleteState(code);
+}
+
 export async function reOrderState(code: string, order: "up" | "down") {
     //TODO make api call
     return dataStore.updateOrder(code, order);

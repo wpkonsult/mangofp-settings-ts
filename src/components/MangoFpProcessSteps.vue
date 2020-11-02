@@ -39,59 +39,11 @@
                                         <v-btn
                                             text
                                             @click.stop="
-                                                deleteDialogOpen = true
+                                                openDeleteConfirm(state.code)
                                             "
                                         >
-                                            {{ locStr("Delete1") }}
+                                            {{ locStr("Delete") }}
                                         </v-btn>
-                                        <v-dialog
-                                            v-model="deleteDialogOpen"
-                                            max-width="290"
-											:retain-focus="false"
-											overlay-opacity=0.5
-											overlay-color="white"
-											light
-                                        >
-                                            <v-card>
-                                                <v-card-title class="headline">
-                                                    Use Google's location
-                                                    service?
-                                                </v-card-title>
-
-                                                <v-card-text>
-                                                    Let Google help apps
-                                                    determine location. This
-                                                    means sending anonymous
-                                                    location data to Google,
-                                                    even when no apps are
-                                                    running.
-                                                </v-card-text>
-
-                                                <v-card-actions>
-                                                    <v-spacer></v-spacer>
-
-                                                    <v-btn
-                                                        color="green darken-1"
-                                                        text
-                                                        @click="
-                                                            deleteDialogOpen = false
-                                                        "
-                                                    >
-                                                        Disagree
-                                                    </v-btn>
-
-                                                    <v-btn
-                                                        color="green darken-1"
-                                                        text
-                                                        @click="
-                                                            deleteDialogOpen = false
-                                                        "
-                                                    >
-                                                        Agree
-                                                    </v-btn>
-                                                </v-card-actions>
-                                            </v-card>
-                                        </v-dialog>
                                         <div class="reordering">
                                             <span>
                                                 {{ locStr("Reorder") }}
@@ -134,6 +86,43 @@
                 </v-card>
             </v-row>
         </v-container>
+        <v-dialog
+            v-model="delDialogOpen"
+            width="290"
+            :retain-focus="false"
+            :overlay-opacity="0.2"
+        >
+            <v-card>
+                <v-card-title class="headline">
+                    {{ locStr("Are you sure?") }}
+                </v-card-title>
+
+                <v-card-text>
+                    {{
+                        locStr(
+                            "Are you sure that you want to delete step " +
+                                delConfirmCode,
+                        )
+                    }}
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogConfirm()"
+                    >
+                        {{ locStr("Cancel") }}
+                    </v-btn>
+
+                    <v-btn color="blue darken-1" text @click="deleteStep()">
+                        {{ locStr("Confirm") }}
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-sheet>
 </template>
 <script lang="ts">
@@ -159,7 +148,8 @@ export default Vue.extend({
     data() {
         return {
             newStepModifyOpen: false,
-            deleteDialogOpen: false,
+            delDialogOpen: false,
+            delConfirmCode: "",
         };
     },
     methods: {
@@ -201,9 +191,22 @@ export default Vue.extend({
                 this.closeStepEdit();
             }
         },
-        deleteStep: async function(code: string) {
-            console.log("delete code: " + code);
-            this.deleteDialogOpen = false;
+        openDeleteConfirm(code: string) {
+            this.delConfirmCode = code;
+            this.delDialogOpen = true;
+        },
+        closeDialogConfirm() {
+            this.delConfirmCode = "";
+            this.delDialogOpen = false;
+        },
+        deleteStep: async function() {
+            console.log("delete code: " + this.delConfirmCode);
+            const isItDone = await Actions.deleteState(this.delConfirmCode);
+            if (!isItDone) {
+                console.log("Deleteing step failed");
+                return false;
+            }
+            this.closeDialogConfirm();
             return true;
         },
         orderStepUp: async function(code: string) {
