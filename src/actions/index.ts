@@ -11,6 +11,8 @@ interface StepsMetadata {
 
 interface PostRequest {
     code?: string;
+    action?: string;
+    state?: string;
 }
 
 async function __makeGetRequest(endpoint: string) {
@@ -72,12 +74,22 @@ export async function getAllStates() {
 }
 
 export async function addNewState(
-    code: string,
     action: string,
     state: string,
 ): Promise<boolean> {
-    //TODO make api call
-    return dataStore.updateOrInsertStateInfo(code, action, state);
+    const response = await __makePostRequest("/steps", { action, state }).catch(
+        err => {
+            console.log("Failed to add new step: " + err.message);
+            return false;
+        },
+    );
+
+    if (!response.steps) {
+        console.log("No steps in response");
+        return false;
+    }
+
+    return await reloadAllSteps(response.steps);
 }
 
 export async function updateState(
@@ -85,14 +97,22 @@ export async function updateState(
     action: string,
     state: string,
 ): Promise<boolean> {
-    //TODO make api call
-    return dataStore.updateOrInsertStateInfo(code, action, state);
+    const response = await __makePostRequest("/steps/" + code, { action, state }).catch(
+        err => {
+            console.log("Failed to add new step: " + err.message);
+            return false;
+        },
+    );
+
+    if (!response.steps) {
+        console.log("No steps in response");
+        return false;
+    }
+
+    return await reloadAllSteps(response.steps);
 }
 
 export async function deleteState(code: string) {
-    //console.log("About to delete state " + code);
-    //return dataStore.deleteState(code);
-
     const response = await __makePostRequest(
         "/steps/" + code + "/delete",
         {},

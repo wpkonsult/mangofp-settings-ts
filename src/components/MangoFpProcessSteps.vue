@@ -162,25 +162,9 @@ export default Vue.extend({
             state: string;
         }) {
             const isItDone = await Actions.addNewState(
-                param.code,
                 param.action,
                 param.state,
             );
-            if (isItDone) {
-                this.closeStepEdit();
-            }
-        },
-        updateStepEdit: async function(param: {
-            code: string;
-            action: string;
-            state: string;
-        }) {
-            const isItDone = await Actions.updateState(
-                param.code,
-                param.action,
-                param.state,
-            );
-            this.closeStepEdit();
             if (isItDone) {
                 this.closeStepEdit();
             }
