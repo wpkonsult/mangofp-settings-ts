@@ -39,7 +39,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { fetchStates } from "@/controllers/states";
+import { getAllStates } from "@/actions";
 import { locStr } from "@/utilities";
 import MangoFpSettingsProcess from "./MangoFpSettingsProcess.vue";
 import MangoFpProcessSteps from "./MangoFpProcessSteps.vue";
@@ -64,13 +64,8 @@ export default Vue.extend({
         },
     },
     async mounted() {
-        this.loading = false;
-        const retData = await fetchStates();
-        console.log("Returned data:");
-        console.log(retData);
-        for (const elem of retData) {
-            await dataStore.addState(elem);
-        }
+		const loaded = await getAllStates();
+        this.loading = !loaded;
     },
 });
 </script>
