@@ -64,7 +64,7 @@ export default Vue.extend({
         },
     },
     async mounted() {
-		const loaded = await getAllStates();
+        const loaded = await getAllStates();
         this.loading = !loaded;
     },
 });

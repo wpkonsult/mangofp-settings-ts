@@ -21,5 +21,5 @@ export interface StateData {
     state: string;
     action: string;
     next: string[];
-    template: EmailTemplate;
+    template?: EmailTemplate;
 }

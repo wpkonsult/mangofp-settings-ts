@@ -7,6 +7,7 @@ export interface AllStateType {
 export interface Type {
     debug: boolean;
     state: AllStateType;
+    resetState: Function;
     addState: Function;
     updateNextState: Function;
     getAllState: Function;
@@ -18,16 +19,14 @@ export interface Type {
 }
 // eslint-disable-next-line
 export function makeStore(bus: any, debug: boolean): Type {
-    const stateList: StateData[] = [];
+	const stateList: StateData[] = [];
     return {
         debug,
         state: { stateList },
+        resetState() {
+            this.state.stateList.splice(0, this.state.stateList.length);
+        },
         async addState(stateData: StateData): Promise<boolean> {
-            if (debug) {
-                console.log(
-                    "Will add state data: " + JSON.stringify(stateData),
-                );
-            }
             this.state.stateList.push(stateData);
             return true;
         },
