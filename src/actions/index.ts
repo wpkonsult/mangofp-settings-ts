@@ -13,6 +13,7 @@ interface PostRequest {
     code?: string;
     action?: string;
     state?: string;
+    next?: string[];
 }
 
 async function __makeGetRequest(endpoint: string) {
@@ -94,14 +95,16 @@ export async function addNewState(
 
 export async function updateState(
     code: string,
-    action: string,
-    state: string,
+    action: string | undefined,
+    state: string | undefined,
+    next: string[] | undefined,
 ): Promise<boolean> {
     const response = await __makePostRequest("/steps/" + code, {
         action,
         state,
+        next,
     }).catch(err => {
-        console.log("Failed to add new step: " + err.message);
+        console.log("Failed to update a step: " + err.message);
         return false;
     });
 
@@ -132,5 +135,18 @@ export async function deleteState(code: string) {
 
 export async function reOrderState(code: string, order: "up" | "down") {
     //TODO make api call
-    return dataStore.updateOrder(code, order);
+    dataStore.updateOrder(code, order);
+    __makePostRequest(
+        "/steps/" + code + "/move" + order,
+        {},
+	)
+	.then(() => {console.log('Finished saving');
+	})
+	.catch(err => {
+		console.log("Now there is an error: " + err.message);
+		getAllStates();
+        return;
+	});
+
+    return;
 }

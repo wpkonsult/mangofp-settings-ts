@@ -154,15 +154,12 @@ export default Vue.extend({
             return "" + next.join(", ");
         },
         async saveData(payload: { code: string; next: string[] }) {
-            const isItDone = await dataStore.updateNextState(
+            Actions.updateState(
                 payload.code,
+                undefined,
+                undefined,
                 payload.next,
             );
-            if (isItDone) {
-                const thePanel = this.$refs
-                    .nextStepsPanel as ExpansionPanelType;
-                thePanel.toggle();
-            }
         },
         closeEdit() {
             this.states = dataStore.getStateList();
@@ -227,15 +224,12 @@ export default Vue.extend({
             action: string;
             state: string;
         }) {
-            const isItDone = await Actions.updateState(
+            await Actions.updateState(
                 param.code,
                 param.action,
                 param.state,
+                undefined,
             );
-            if (isItDone) {
-                this.closeInfoPane();
-            }
-            console.log("Update lõpetab");
         },
     },
 });
