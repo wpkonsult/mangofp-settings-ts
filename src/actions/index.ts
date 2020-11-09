@@ -97,12 +97,13 @@ export async function updateState(
     action: string,
     state: string,
 ): Promise<boolean> {
-    const response = await __makePostRequest("/steps/" + code, { action, state }).catch(
-        err => {
-            console.log("Failed to add new step: " + err.message);
-            return false;
-        },
-    );
+    const response = await __makePostRequest("/steps/" + code, {
+        action,
+        state,
+    }).catch(err => {
+        console.log("Failed to add new step: " + err.message);
+        return false;
+    });
 
     if (!response.steps) {
         console.log("No steps in response");

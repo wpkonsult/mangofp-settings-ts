@@ -24,12 +24,6 @@
                         <MangoFpProcessSteps :states="states" />
                     </v-tab-item>
                     <v-tab-item transition="false" reverse-transition="false">
-                        <MangoFpSettingsProcess :states="states" />
-                    </v-tab-item>
-                    <v-tab-item transition="false" reverse-transition="false">
-                        Siia tulevad mallid
-                    </v-tab-item>
-                    <v-tab-item transition="false" reverse-transition="false">
                         Siia tulevad üldised parameetrid
                     </v-tab-item>
                 </v-tabs>
@@ -41,14 +35,12 @@
 import Vue from "vue";
 import { getAllStates } from "@/actions";
 import { locStr } from "@/utilities";
-import MangoFpSettingsProcess from "./MangoFpSettingsProcess.vue";
 import MangoFpProcessSteps from "./MangoFpProcessSteps.vue";
 import { dataStore } from "@/main";
 
 export default Vue.extend({
     name: "MangoFpSettingsMain",
     components: {
-        MangoFpSettingsProcess,
         MangoFpProcessSteps,
     },
     data() {

@@ -3,9 +3,9 @@
         <v-expansion-panel ref="infoPanel">
             <v-expansion-panel-header>
                 <div class="step-panel-header">
-                    {{ state.order }}.{{ state.code }}:
+                    {{ state.order }}.
                     {{
-                        locStr("Action" + ": ") +
+                        locStr(" Action" + ": ") +
                             state.action +
                             " => " +
                             locStr(" State" + ": ") +

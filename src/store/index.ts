@@ -19,7 +19,7 @@ export interface Type {
 }
 // eslint-disable-next-line
 export function makeStore(bus: any, debug: boolean): Type {
-	const stateList: StateData[] = [];
+    const stateList: StateData[] = [];
     return {
         debug,
         state: { stateList },
