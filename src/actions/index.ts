@@ -136,17 +136,15 @@ export async function deleteState(code: string) {
 export async function reOrderState(code: string, order: "up" | "down") {
     //TODO make api call
     dataStore.updateOrder(code, order);
-    __makePostRequest(
-        "/steps/" + code + "/move" + order,
-        {},
-	)
-	.then(() => {console.log('Finished saving');
-	})
-	.catch(err => {
-		console.log("Now there is an error: " + err.message);
-		getAllStates();
-        return;
-	});
+    __makePostRequest("/steps/" + code + "/move" + order, {})
+        .then(() => {
+            console.log("Finished saving");
+        })
+        .catch(err => {
+            console.log("Now there is an error: " + err.message);
+            getAllStates();
+            return;
+        });
 
     return;
 }
