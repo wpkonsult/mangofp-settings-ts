@@ -1,39 +1,44 @@
 <template>
-    <v-card dark color="#f1f1f1">
-        <v-card-text class="pb-0">
-            <v-text-field
-                light
-                class="input-on-card"
-                :hint="
-                    locStr(
-                        'Action - What should be done to achieve result of this step',
-                    )
-                "
-                solo
-                dense
-                :label="locStr('Action')"
-                v-model="action4Edit"
-            ></v-text-field>
-            <v-text-field
-                light
-                class="input-on-card"
-                :hint="locStr('State - What is achieved in this step')"
-                solo
-                dense
-                :label="locStr('Description')"
-                ref="stateField"
-                v-model="state4Edit"
-            ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-            <v-btn light text @click="saveData">
-                {{ locStr("Save") }}
-            </v-btn>
-            <v-btn light text @click="cancelSaving">
-                {{ locStr("Cancel") }}
-            </v-btn>
-        </v-card-actions>
-    </v-card>
+    <div>
+        <v-card dark color="#f1f1f1">
+            <v-card-text class="pb-0">
+                <v-text-field
+                    light
+                    class="input-on-card"
+                    :hint="
+                        locStr(
+                            'Action - What should be done to achieve result of this step',
+                        )
+                    "
+                    solo
+                    dense
+                    :label="locStr('Action')"
+                    v-model="action4Edit"
+                ></v-text-field>
+                <v-text-field
+                    light
+                    class="input-on-card"
+                    :hint="locStr('State - What is achieved in this step')"
+                    solo
+                    dense
+                    :label="locStr('Description')"
+                    ref="stateField"
+                    v-model="state4Edit"
+                ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn light text @click="saveData">
+                    {{ locStr("Save") }}
+                </v-btn>
+                <v-btn light text @click="cancelSaving">
+                    {{ locStr("Cancel") }}
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+        <v-overlay :value="showLoader" :absolute="absolute">
+            <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+    </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
@@ -50,12 +55,16 @@ export default Vue.extend({
         state: {
             type: String,
         },
+        showLoader: {
+            type: Boolean,
+        },
     },
     data() {
         return {
             code4Edit: this.code || "",
             action4Edit: this.action || "",
             state4Edit: this.state || "",
+            absolute: true,
         };
     },
     mounted() {

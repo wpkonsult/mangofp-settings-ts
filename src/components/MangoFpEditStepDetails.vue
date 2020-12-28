@@ -20,6 +20,7 @@
                     :state="state.state"
                     @close="closeInfoPane"
                     @add="updateInfoEdit"
+                    :showLoader="state.savingInfo"
                 />
             </v-expansion-panel-content>
         </v-expansion-panel>
@@ -35,8 +36,9 @@
                     :state="state"
                     :allStates="possibleNextStates(state.code)"
                     :saveInProgress="saveInProgress"
-                    @close="closeEdit"
-                    @add="saveData"
+                    @close="closeStepsPane"
+                    @add="saveStepsData"
+                    :showLoader="state.savingInfo"
                 />
             </v-expansion-panel-content>
         </v-expansion-panel>
@@ -45,44 +47,29 @@
                 <strong> {{ locStr("Email template") }}</strong>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-                <v-card class="pa-0" flat>
-                    <v-card-text>
-                        <v-text-field
-                            class="step-text-field"
-                            solo
-                            :label="locStr('Addresses')"
-                            :hint="locStr('CC addresses for archiving options')"
-                            v-model="addresses4Edit"
-                        ></v-text-field>
-                        <v-textarea
-                            solo
-                            rows="10"
-                            full-width
-                            v-model="email4Edit"
-                            hint="Template of the email to be sent to the contact when action of this step is executed"
-                        >
-                        </v-textarea>
-                    </v-card-text>
-                    <v-card-actions class="pl-0" color="">
-                        <v-btn outlined text @click="saveTemplate">
-                            {{ locStr("Confirm") }}
-                        </v-btn>
-                        <v-btn outlined text @click="cancelTemplate">
-                            {{ locStr("Cancel") }}
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
+                <MangoFpEditEmailTemplate
+                    :code="state.code"
+                    :addresses="template.addresses"
+                    :mainAddresses="template.mainAddresses"
+                    :templateText="template.template"
+                    :loaded="template.loaded"
+                    @updateTemplate="saveTemplate"
+                    @close="closeTemplatePane"
+                    :showLoader="state.savingTemplate"
+                    :state="state"
+                />
             </v-expansion-panel-content>
         </v-expansion-panel>
     </v-expansion-panels>
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { StateData, NextState, makeTemplateObj } from "@/types";
+import { StateData, NextState } from "@/types";
 import { locStr } from "@/utilities";
 import { VExpansionPanel } from "vuetify/lib";
 import MangoFpEditProcess from "./MangoFpEditProcess.vue";
 import MangoFpEditStep from "./MangoFpEditStep.vue";
+import MangoFpEditEmailTemplate from "./MangoFpEditEmailTemplate.vue";
 import { dataStore } from "@/main";
 import * as Actions from "@/actions";
 
@@ -108,20 +95,22 @@ export default Vue.extend({
     components: {
         MangoFpEditProcess,
         MangoFpEditStep,
+        MangoFpEditEmailTemplate,
     },
     props: {
         state: {
             type: Object,
-        },
+            required: true,
+        } as Vue.PropOptions<StateData>,
     },
     data() {
         const states: StateData[] = dataStore.getStateList();
-        const template = this.state.template || makeTemplateObj();
+        const template = this.state.template;
         return {
             states,
+            template,
             saveInProgress: false,
-            email4Edit: template.template,
-            addresses4Edit: template.addresses.join("; "),
+            tempShow: false,
         };
     },
     methods: {
@@ -153,7 +142,7 @@ export default Vue.extend({
 
             return "" + next.join(", ");
         },
-        async saveData(payload: { code: string; next: string[] }) {
+        async saveStepsData(payload: { code: string; next: string[] }) {
             Actions.updateState(
                 payload.code,
                 undefined,
@@ -161,54 +150,50 @@ export default Vue.extend({
                 payload.next,
             );
         },
-        closeEdit() {
+        closeStepsPane() {
             this.states = dataStore.getStateList();
             const thePanel = this.$refs.nextStepsPanel as ExpansionPanelType;
             thePanel.toggle();
         },
+
         closeTemplatePane() {
             const thePanel = this.$refs.templatePanel as ExpansionPanelType;
             thePanel.toggle();
         },
         closeInfoPane() {
+            console.log("Sulgeme infopaneeli");
             const thePanel = this.$refs.infoPanel as ExpansionPanelType;
             thePanel.toggle();
         },
-        cancelTemplate() {
-            const template = this.state.template || makeTemplateObj();
-            this.email4Edit = template.template;
-            this.addresses4Edit = template.addresses.join("; ");
+
+        async saveTemplate(payload: {
+            code: string;
+            addresses: string[];
+            mainAddresses: string[];
+            templateText: string;
+        }) {
+            Actions.updateTemplate(
+                this.state.code,
+                payload.templateText,
+                payload.addresses,
+                payload.mainAddresses,
+            );
             this.closeTemplatePane();
         },
-        async saveTemplate() {
-            const validatedEmails = await this.validateAndGetEmailAddresses(
-                this.addresses4Edit,
-            ).catch(err => {
-                console.log("Catched error: " + err.message);
-                return false;
-            });
-            if (!validatedEmails) {
-                return false;
-            }
-
-            const isItDone = await dataStore.updateEmailTemplate(
-                this.state.code,
-                this.email4Edit,
-                validatedEmails,
-            );
-
-            if (isItDone) {
-                this.closeTemplatePane();
-            }
-        },
         async validateAndGetEmailAddresses(
-            addresses: string,
+            addresses: string[],
         ): Promise<string[]> {
-            const emails = addresses.split(";").map((elem: string) => {
+            const specials = ["[contactEmail]"];
+            const emails = addresses.map((elem: string) => {
                 const email = elem.trim();
                 if (!email) {
                     return "";
                 }
+
+                if (specials.includes(email)) {
+                    return email;
+                }
+
                 const RegValidate = /([a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
                 if (!RegValidate.test(email)) {
                     throw new Error(
@@ -224,7 +209,7 @@ export default Vue.extend({
             action: string;
             state: string;
         }) {
-            await Actions.updateState(
+            Actions.updateState(
                 param.code,
                 param.action,
                 param.state,
