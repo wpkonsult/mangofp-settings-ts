@@ -5,7 +5,8 @@ import * as Store from "@/store";
 
 Vue.config.productionTip = false;
 export const bus = new Vue();
-export const dataStore: Store.Type = Store.makeStore(bus, true);
+export const dataStore: Store.Type = Store.makeStore(true);
+//export const dataStore = Vue.observable(dataStoreRaw);
 
 new Vue({
     vuetify,

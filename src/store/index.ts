@@ -1,33 +1,62 @@
-import { StateData, makeTemplateObj } from "@/types";
+import { StateData, EmailTemplate, makeTemplateObj } from "@/types";
 
 export interface AllStateType {
     stateList: StateData[];
 }
 
+export interface Alert {
+    showAlert: boolean;
+    alertMessage: string;
+}
+
 export interface Type {
+    generalAlert: Alert;
     debug: boolean;
     state: AllStateType;
     resetState: Function;
     addState: Function;
     updateNextState: Function;
+    _findStep: Function;
     getAllState: Function;
     getStateList: Function;
-    updateEmailTemplate: Function;
+    updateOrInsertEmailTemplate: Function;
+    markTemplateAsLoaded: Function;
     updateOrInsertStateInfo: Function;
     updateOrder: Function;
     deleteState: Function;
+    setGeneralAlert: Function;
+    clearGeneralAlert: Function;
+    setInfoSaving: Function;
+    setTemplateSaving: Function;
 }
-// eslint-disable-next-line
-export function makeStore(bus: any, debug: boolean): Type {
+
+export function makeStore(debug: boolean): Type {
     const stateList: StateData[] = [];
     return {
+        generalAlert: { showAlert: false, alertMessage: "" },
         debug,
         state: { stateList },
         resetState() {
             this.state.stateList.splice(0, this.state.stateList.length);
+            this.clearGeneralAlert();
+        },
+        setGeneralAlert(errorMsg: string) {
+            this.generalAlert.showAlert = true;
+            this.generalAlert.alertMessage = errorMsg;
+        },
+        clearGeneralAlert() {
+            this.generalAlert.showAlert = false;
+            this.generalAlert.alertMessage = "";
         },
         async addState(stateData: StateData): Promise<boolean> {
-            this.state.stateList.push(stateData);
+            this.state.stateList.push({
+                ...stateData,
+                ...{
+                    savingInfo: false,
+                    savingSteps: false,
+                    savingTemplate: false,
+                },
+            });
             return true;
         },
         async updateNextState(
@@ -51,27 +80,57 @@ export function makeStore(bus: any, debug: boolean): Type {
             return true;
         },
 
-        async updateEmailTemplate(
+        updateOrInsertEmailTemplate(
             code: string,
             emailTemplate: string,
-            addresses?: string[],
-        ): Promise<boolean> {
+            addresses: string[],
+            mainAddresses: string[],
+            loaded = true,
+        ): EmailTemplate | boolean {
             if (debug) {
-                console.log(`Will update email template`);
+                console.log("Will update email template");
             }
             const step = this.state.stateList.find(obj => obj.code === code);
             if (!step) {
                 console.log("Did not find step with code " + code);
+                //TODO set error state and message
                 return false;
             }
 
-            if (!step.template) {
-                step.template = makeTemplateObj();
+            const stepTemplate = step.template as EmailTemplate;
+            stepTemplate.addresses = addresses;
+            stepTemplate.mainAddresses = mainAddresses;
+            stepTemplate.template = emailTemplate;
+            stepTemplate.loaded = loaded;
+            return stepTemplate;
+        },
+
+        _findStep(code: string) {
+            const step = this.state.stateList.find(obj => obj.code === code);
+            if (!step) {
+                throw new Error("Step not found");
             }
-            step.template.template = emailTemplate;
-            step.template.addresses = addresses || [];
+
+            return step;
+        },
+
+        markTemplateAsLoaded(code: string, loaded = true) {
+            const step = this._findStep(code);
+            step.template.loaded = loaded;
             return true;
         },
+
+        setInfoSaving(code: string, loaded = true) {
+            const step = this._findStep(code);
+            step.savingInfo = loaded;
+            return true;
+        },
+        setTemplateSaving(code: string, loaded = true) {
+            const step = this._findStep(code);
+            step.savingTemplate = loaded;
+            return true;
+        },
+
         async updateOrInsertStateInfo(
             code: string,
             action: string,
@@ -91,7 +150,9 @@ export function makeStore(bus: any, debug: boolean): Type {
                     state,
                     action,
                     next: [],
-                    template: makeTemplateObj(),
+                    savingInfo: false,
+                    savingTemplate: false,
+                    template: makeTemplateObj(code),
                 };
                 return this.addState(newStep);
             }

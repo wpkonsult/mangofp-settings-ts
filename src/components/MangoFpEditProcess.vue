@@ -1,25 +1,30 @@
 <template>
-    <v-card class="pa-0" flat>
-        <v-card-text class="next-steps pa-0">
-            <v-switch
-                v-for="elem in allStates"
-                :key="elem.value"
-                class="col-md-6 pa-0 mt-1"
-                v-model="next4Edit"
-                inset
-                :label="elem.text"
-                :value="elem.value"
-            ></v-switch>
-        </v-card-text>
-        <v-card-actions class="pl-0" color="">
-            <v-btn outlined text @click="saveData">
-                {{ locStr("Confirm") }}
-            </v-btn>
-            <v-btn outlined text @click="cancelSaving">
-                {{ locStr("Cancel") }}
-            </v-btn>
-        </v-card-actions>
-    </v-card>
+    <div>
+        <v-card class="pa-0" flat>
+            <v-card-text class="next-steps pa-0">
+                <v-switch
+                    v-for="elem in allStates"
+                    :key="elem.value"
+                    class="col-md-6 pa-0 mt-1"
+                    v-model="next4Edit"
+                    inset
+                    :label="elem.text"
+                    :value="elem.value"
+                ></v-switch>
+            </v-card-text>
+            <v-card-actions class="pl-0" color="">
+                <v-btn outlined text @click="saveData">
+                    {{ locStr("Confirm") }}
+                </v-btn>
+                <v-btn outlined text @click="cancelSaving">
+                    {{ locStr("Cancel") }}
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+        <v-overlay :value="showLoader" :absolute="absolute">
+            <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+    </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
@@ -36,10 +41,14 @@ export default Vue.extend({
             type: Array,
             required: true,
         },
+        showLoader: {
+            type: Boolean,
+        },
     },
     data() {
         return {
             next4Edit: [...this.state.next],
+            absolute: true,
         };
     },
     methods: {

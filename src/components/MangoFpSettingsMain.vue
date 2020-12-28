@@ -9,19 +9,19 @@
             <h1>{{ locStr("MangoFp settings") }}</h1>
             <v-sheet class="mt-4">
                 <v-alert
-                    v-if="error"
                     dismissible
+                    v-model="globalState.generalAlert.showAlert"
                     outlined
                     type="warning"
                     border="left"
                 >
-                    {{ error }}
+                    error: {{ globalState.generalAlert.alertMessage }}
                 </v-alert>
                 <v-tabs class="settings-main-tabs" vertical>
                     <v-tab>{{ locStr("Define process steps") }}</v-tab>
                     <v-tab>{{ locStr("Parameters") }}</v-tab>
                     <v-tab-item transition="false" reverse-transition="false">
-                        <MangoFpProcessSteps :states="states" />
+                        <MangoFpProcessSteps />
                     </v-tab-item>
                     <v-tab-item transition="false" reverse-transition="false">
                         Siia tulevad üldised parameetrid
@@ -35,8 +35,8 @@
 import Vue from "vue";
 import { getAllStates } from "@/actions";
 import { locStr } from "@/utilities";
-import MangoFpProcessSteps from "./MangoFpProcessSteps.vue";
 import { dataStore } from "@/main";
+import MangoFpProcessSteps from "./MangoFpProcessSteps.vue";
 
 export default Vue.extend({
     name: "MangoFpSettingsMain",
@@ -46,8 +46,7 @@ export default Vue.extend({
     data() {
         return {
             loading: true,
-            error: "",
-            states: dataStore.state.stateList,
+            globalState: dataStore,
         };
     },
     methods: {

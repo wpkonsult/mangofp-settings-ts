@@ -126,6 +126,7 @@ import { locStr } from "@/utilities";
 import MangoFpEditStep from "./MangoFpEditStep.vue";
 import MangoFpEditStepDetails from "./MangoFpEditStepDetails.vue";
 import * as Actions from "@/actions";
+import { dataStore } from "@/main";
 
 export default Vue.extend({
     name: "MangoFpProcessSteps",
@@ -133,17 +134,12 @@ export default Vue.extend({
         MangoFpEditStep,
         MangoFpEditStepDetails,
     },
-    props: {
-        states: {
-            type: Array,
-            required: true,
-        } as Vue.PropOptions<StateData[]>,
-    },
     data() {
         return {
             newStepModifyOpen: false,
             delDialogOpen: false,
             delConfirmCode: "",
+            states: dataStore.state.stateList as StateData[],
         };
     },
     methods: {
