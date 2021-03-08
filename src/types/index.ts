@@ -31,3 +31,19 @@ export interface StateData {
     savingInfo: boolean;
     savingTemplate: boolean;
 }
+
+export enum ParameterType {
+    text = "TEXT",
+    email = "EMAIL",
+    boolean = "BOOL",
+    select = "SELECT",
+}
+
+export interface Parameter {
+    label: string;
+    type: ParameterType;
+    name: string;
+    value: string;
+    hint?: string;
+    errorMsg?: string;
+}

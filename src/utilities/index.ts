@@ -11,4 +11,12 @@ function locStr(key: string): string {
     return MANGOFP_RESOURCES.strings[key];
 }
 
-export { locStr };
+function validateEmail(email: string): boolean {
+    if (!email) {
+        return true;
+    }
+    const RegValidate = /([a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
+    return RegValidate.test(email);
+}
+
+export { locStr, validateEmail };

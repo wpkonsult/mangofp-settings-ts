@@ -24,14 +24,11 @@
                     :error="!addressesAreValid"
                     :error-messages="addressesValidationError"
                 ></v-text-field>
-                <v-textarea
-                    solo
-                    rows="10"
-                    full-width
+                <vue-editor
+                    class="emailEditor"
                     v-model="email4Edit"
-                    hint="Template of the email to be sent to the contact when action of this step is executed"
-                >
-                </v-textarea>
+                    :editorToolbar="editorToolbar"
+                ></vue-editor>
             </v-card-text>
             <v-card-actions class="pl-0" color="">
                 <v-btn outlined text @click="saveTemplate">
@@ -49,10 +46,15 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { locStr } from "@/utilities";
+import { locStr, validateEmail } from "@/utilities";
 import { loadTemplate } from "@/actions";
+import { VueEditor } from "vue2-editor";
+
 export default Vue.extend({
     name: "MangoFpEditEmailTemplate",
+    components: {
+        VueEditor,
+    },
     props: {
         code: {
             type: String,
@@ -86,6 +88,21 @@ export default Vue.extend({
             mainAddressesAreValid: true,
             mainAddressesValidationError: "",
             absolute: true,
+            editorToolbar: [
+                [{ header: [false, 1, 2, 3, 4, 5, 6] }],
+                ["bold", "italic", "underline", "strike"], // toggled buttons
+                [
+                    { align: "" },
+                    { align: "center" },
+                    { align: "right" },
+                    { align: "justify" },
+                ],
+                [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+                [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+                [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+                ["link"],
+                ["clean"], // remove formatting butto
+            ],
         };
     },
     mounted() {
@@ -142,8 +159,7 @@ export default Vue.extend({
                     return email;
                 }
 
-                const RegValidate = /([a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
-                if (!RegValidate.test(email)) {
+                if (!validateEmail(email)) {
                     throw new Error(
                         email + " " + this.locStr("is not proper email"),
                     );
@@ -200,3 +216,14 @@ export default Vue.extend({
     },
 });
 </script>
+<style>
+.emailEditor {
+    color: black;
+    font-size: 15px;
+}
+
+.emailEditor p {
+    color: black;
+    font-size: 15px;
+}
+</style>

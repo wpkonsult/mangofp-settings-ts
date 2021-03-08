@@ -1,7 +1,14 @@
-import { StateData, EmailTemplate, makeTemplateObj } from "@/types";
+import {
+    StateData,
+    EmailTemplate,
+    makeTemplateObj,
+    Parameter,
+    ParameterType,
+} from "@/types";
 
 export interface AllStateType {
     stateList: StateData[];
+    parameters: Parameter[];
 }
 
 export interface Alert {
@@ -11,12 +18,14 @@ export interface Alert {
 
 export interface Type {
     generalAlert: Alert;
+    generalMessage: Alert;
     debug: boolean;
     state: AllStateType;
     resetState: Function;
     addState: Function;
     updateNextState: Function;
     _findStep: Function;
+    _findOption: Function;
     getAllState: Function;
     getStateList: Function;
     updateOrInsertEmailTemplate: Function;
@@ -26,16 +35,25 @@ export interface Type {
     deleteState: Function;
     setGeneralAlert: Function;
     clearGeneralAlert: Function;
+    setGeneralMessage: Function;
+    clearGeneralMessage: Function;
     setInfoSaving: Function;
     setTemplateSaving: Function;
+    getParameters: Function;
+    setOption: Function;
 }
 
 export function makeStore(debug: boolean): Type {
     const stateList: StateData[] = [];
+    const parameters: Parameter[] = [];
     return {
         generalAlert: { showAlert: false, alertMessage: "" },
+        generalMessage: {
+            showAlert: false,
+            alertMessage: "",
+        },
         debug,
-        state: { stateList },
+        state: { stateList, parameters },
         resetState() {
             this.state.stateList.splice(0, this.state.stateList.length);
             this.clearGeneralAlert();
@@ -47,6 +65,14 @@ export function makeStore(debug: boolean): Type {
         clearGeneralAlert() {
             this.generalAlert.showAlert = false;
             this.generalAlert.alertMessage = "";
+        },
+        setGeneralMessage(message: string) {
+            this.generalMessage.showAlert = true;
+            this.generalMessage.alertMessage = message;
+        },
+        clearGeneralMessage() {
+            this.generalMessage.showAlert = false;
+            this.generalMessage.alertMessage = "";
         },
         async addState(stateData: StateData): Promise<boolean> {
             this.state.stateList.push({
@@ -114,6 +140,40 @@ export function makeStore(debug: boolean): Type {
             return step;
         },
 
+        _findOption(label: string): Parameter | boolean {
+            const option = this.state.parameters.find(
+                obj => obj.label === label,
+            );
+            if (!option) {
+                return false;
+            }
+
+            return option;
+        },
+
+        setOption(optionParam: {
+            label: string;
+            type: ParameterType;
+            name: string;
+            value: string;
+            hint: string;
+        }): boolean {
+            const optionRet = this._findOption(optionParam.label);
+            if (!optionRet) {
+                const option: Parameter = {
+                    label: optionParam.label,
+                    type: optionParam.type,
+                    name: optionParam.name,
+                    value: optionParam.value,
+                    hint: optionParam.hint || "",
+                    errorMsg: "",
+                };
+                this.state.parameters.push(option);
+            } else {
+                optionRet.value = optionParam.value;
+            }
+            return true;
+        },
         markTemplateAsLoaded(code: string, loaded = true) {
             const step = this._findStep(code);
             step.template.loaded = loaded;
@@ -166,6 +226,10 @@ export function makeStore(debug: boolean): Type {
         },
         getStateList(): StateData[] {
             return this.state.stateList;
+        },
+
+        getParameters(): Parameter[] {
+            return this.state.parameters;
         },
 
         updateOrder(code: string, order: "up" | "down"): boolean {
