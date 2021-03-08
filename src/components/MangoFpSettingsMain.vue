@@ -5,9 +5,9 @@
             indeterminate
             color="primary"
         ></v-progress-circular>
-        <div v-else>
-            <h1>{{ locStr("MangoFp settings") }}</h1>
-            <v-sheet class="mt-4">
+        <v-row v-else>
+            <v-col>
+                <h1>{{ locStr("MangoFp settings") }}</h1>
                 <v-alert
                     dismissible
                     v-model="globalState.generalAlert.showAlert"
@@ -15,20 +15,44 @@
                     type="warning"
                     border="left"
                 >
-                    error: {{ globalState.generalAlert.alertMessage }}
+                    {{ globalState.generalAlert.alertMessage }}
                 </v-alert>
-                <v-tabs class="settings-main-tabs" vertical>
+                <v-snackbar
+                    dismissible
+                    v-model="globalState.generalMessage.showAlert"
+                    absolute
+                    centered
+                    color="primary"
+                    top
+                    :timeout="timeout"
+                    text
+                >
+                    {{ globalState.generalMessage.alertMessage }}
+                    <template v-slot:action="{ attrs }">
+                        <v-btn
+                            color="white"
+                            icon
+                            v-bind="attrs"
+                            @click="
+                                globalState.generalMessage.showAlert = false
+                            "
+                        >
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </template>
+                </v-snackbar>
+                <v-tabs class="settings-main-tabs" @change="doOnChange">
                     <v-tab>{{ locStr("Define process steps") }}</v-tab>
                     <v-tab>{{ locStr("Parameters") }}</v-tab>
                     <v-tab-item transition="false" reverse-transition="false">
                         <MangoFpProcessSteps />
                     </v-tab-item>
                     <v-tab-item transition="false" reverse-transition="false">
-                        Siia tulevad üldised parameetrid
+                        <MangoFpParameters />
                     </v-tab-item>
                 </v-tabs>
-            </v-sheet>
-        </div>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 <script lang="ts">
@@ -36,22 +60,29 @@ import Vue from "vue";
 import { getAllStates } from "@/actions";
 import { locStr } from "@/utilities";
 import { dataStore } from "@/main";
+import * as Actions from "@/actions";
 import MangoFpProcessSteps from "./MangoFpProcessSteps.vue";
+import MangoFpParameters from "./MangoFpParameters.vue";
 
 export default Vue.extend({
     name: "MangoFpSettingsMain",
     components: {
         MangoFpProcessSteps,
+        MangoFpParameters,
     },
     data() {
         return {
             loading: true,
             globalState: dataStore,
+            timeout: 3000,
         };
     },
     methods: {
-        locStr: function(key: string): string {
+        locStr(key: string): string {
             return locStr(key);
+        },
+        doOnChange() {
+            Actions.clearGeneralMessage();
         },
     },
     async mounted() {

@@ -1,11 +1,13 @@
 import { dataStore } from "@/main";
 import axios from "axios";
-import { makeTemplateObj, StateData } from "@/types";
+import { makeTemplateObj, StateData, Parameter } from "@/types";
 import { locStr } from "@/utilities";
 
 // eslint-disable-next-line
 const MANGOFP_RESOURCES = (window as any).MANGOFP_RESOURCES;
 const ROOT_URL = MANGOFP_RESOURCES["adminUrl"];
+const MANGOFP_NONCE = MANGOFP_RESOURCES["nonce"];
+
 interface StepsMetadata {
     [key: string]: StateData;
 }
@@ -22,8 +24,17 @@ interface TemplateRequest {
     primaryEmails: string[];
 }
 
+interface OptionsRequest {
+    options: { key: string; value: string }[];
+}
+
 async function __makeGetRequest(endpoint: string) {
-    const res = await axios.get(ROOT_URL + endpoint);
+    const config = {
+        headers: {
+            "X-WP-Nonce": MANGOFP_NONCE,
+        },
+    };
+    const res = await axios.get(ROOT_URL + endpoint, config);
     if (!res || res.status !== 200) {
         throw new Error("Unable to read data from " + endpoint);
     }
@@ -41,9 +52,14 @@ async function __makeGetRequest(endpoint: string) {
 
 async function __makePostRequest(
     endpoint: string,
-    properties: PostRequest | TemplateRequest,
+    properties: PostRequest | TemplateRequest | OptionsRequest,
 ) {
-    const res = await axios.post(ROOT_URL + endpoint, properties);
+    const config = {
+        headers: {
+            "X-WP-Nonce": MANGOFP_NONCE,
+        },
+    };
+    const res = await axios.post(ROOT_URL + endpoint, properties, config);
     if (!res || res.status !== 200) {
         throw new Error("Error received from request. Details: " + endpoint);
     }
@@ -85,6 +101,31 @@ export async function getAllStates() {
     }
 
     return await reloadAllSteps(response.steps);
+}
+
+function _processOptionsResponseToStore(options: Parameter[]) {
+    for (const label in options) {
+        dataStore.setOption(options[label]);
+    }
+    return true;
+}
+
+export async function getAllOptions(): Promise<boolean> {
+    const response = await __makeGetRequest("/option").catch(err => {
+        dataStore.setGeneralAlert(
+            locStr("Unable to fetch options: " + err.message),
+        );
+        return false;
+    });
+
+    if (!response.options) {
+        dataStore.setGeneralAlert(
+            locStr("No options in response while getting options"),
+        );
+        return false;
+    }
+
+    return _processOptionsResponseToStore(response.options);
 }
 
 export async function addNewState(
@@ -248,4 +289,34 @@ export async function updateTemplate(
 
     dataStore.setTemplateSaving(code, false);
     return false;
+}
+
+export async function updateOptions(params: Parameter[]) {
+    const storableData = params.map(option => {
+        return {
+            key: option.label,
+            value: option.value,
+        };
+    });
+    const response = await __makePostRequest("/options", {
+        options: storableData,
+    }).catch(err => {
+        dataStore.setGeneralAlert(
+            locStr("Failed to store options:") + " " + err.message,
+        );
+        return false;
+    });
+
+    if (!response.options) {
+        dataStore.setGeneralAlert(
+            locStr("No options in response while updating options"),
+        );
+    } else {
+        _processOptionsResponseToStore(response.options);
+    }
+    dataStore.setGeneralMessage(locStr("Changes to parameters applied"));
+}
+
+export function clearGeneralMessage() {
+    dataStore.clearGeneralMessage();
 }
