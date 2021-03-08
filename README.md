@@ -1,4 +1,5 @@
-# mangofp-settings
+# mangofp-settings - MangoFP front end for configuration and settings
+For full project setup see readme of mangofp project
 
 ## Project setup
 ```
@@ -19,6 +20,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
