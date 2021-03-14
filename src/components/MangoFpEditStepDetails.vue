@@ -5,11 +5,8 @@
                 <div class="step-panel-header">
                     {{ state.order }}.
                     {{
-                        locStr(" Action" + ": ") +
-                            state.action +
-                            " => " +
-                            locStr(" State" + ": ") +
-                            state.state
+                        locStr("Step" + ": ") +
+                        state.state
                     }}
                 </div>
             </v-expansion-panel-header>
@@ -161,7 +158,6 @@ export default Vue.extend({
             thePanel.toggle();
         },
         closeInfoPane() {
-            console.log("Sulgeme infopaneeli");
             const thePanel = this.$refs.infoPanel as ExpansionPanelType;
             thePanel.toggle();
         },

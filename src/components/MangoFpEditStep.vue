@@ -18,7 +18,7 @@
                 <v-text-field
                     light
                     class="input-on-card"
-                    :hint="locStr('State - What is achieved in this step')"
+                    :hint="locStr('Step - What is achieved in this step')"
                     solo
                     dense
                     :label="locStr('Description')"
